@@ -11,7 +11,20 @@ const socketUrl = computed(() => {
 const isConnected = ref(false)
 const opportunities = ref([])
 const totalScanned = ref(0)
+const cumulativeProfit = ref(0)
 const minProfit = ref(0.01)
+
+const formatCumulativeProfit = computed(() => {
+  const val = cumulativeProfit.value
+  if (val >= 100) {
+    return '+' + Math.floor(val / 100) * 100
+  } else if (val >= 10) {
+    return '+' + Math.floor(val / 10) * 10
+  } else if (val >= 1) {
+    return '+' + Math.floor(val)
+  }
+  return '+0'
+})
 const profitSteps = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.2, 0.3, 0.4, 0.5, 1.0]
 
 const minProfitIndex = computed({
@@ -269,6 +282,7 @@ const connectWebSocket = () => {
       if (data.type === 'history') {
         opportunities.value = data.data.map(item => ({ ...item, time: new Date(item.timestamp) }))
         totalScanned.value = opportunities.value.length
+        cumulativeProfit.value = opportunities.value.reduce((acc, o) => acc + o.kesinKarMarji, 0)
       } else if (data.type === 'opportunity') {
         const newItem = {
           ...data.data,
@@ -276,6 +290,7 @@ const connectWebSocket = () => {
         }
         opportunities.value.unshift(newItem)
         totalScanned.value++
+        cumulativeProfit.value += data.data.kesinKarMarji
         // Play notification
         playAlertSound()
         
@@ -794,11 +809,11 @@ onUnmounted(() => {
 
     <!-- Footer -->
     <footer class="w-full bg-[#050409] border-t border-white/5 py-10 px-8 relative z-10">
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+      <div class="w-full flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
         
         <!-- Left Side: Brand Logo and Text Info -->
-        <div class="flex items-center md:items-start gap-4 text-left w-full md:w-auto">
-          <img :src="faviconImg" class="w-16 h-16 object-contain shrink-0 mt-1 select-none pointer-events-none" alt="Logo" />
+        <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+          <img :src="faviconImg" class="w-20 h-20 object-contain shrink-0 select-none pointer-events-none" alt="Logo" />
           <div class="flex flex-col gap-1">
             <span class="text-lg md:text-xl font-black font-outfit uppercase tracking-widest text-white select-none">
               ROLLERCOINMARKT
@@ -807,18 +822,30 @@ onUnmounted(() => {
             <p class="text-gray-500 text-xs max-w-xl leading-relaxed mt-1">
               Rollercoinmarkt is an independent fan project. It is not affiliated with, authorized, or endorsed by RollerCoin.
             </p>
-            <div class="flex items-center gap-1 text-[11px] text-gray-500 mt-2">
-              <span>developing by</span>
+            <div class="flex items-center justify-center sm:justify-start gap-1 text-[11px] text-gray-500 mt-2">
+              <span>Created by</span>
               <span class="creator-name">kryptonn567</span>
             </div>
           </div>
         </div>
 
-        <!-- Right Side: Live opportunities count -->
-        <div class="flex flex-col items-center md:items-end justify-center md:justify-start text-center md:text-right shrink-0 self-center md:self-end">
-          <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Yakalanan Fırsatlar</span>
-          <span class="text-2xl md:text-3xl font-black font-mono text-emerald-400 mt-1 drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]">
-            {{ totalScanned }}
+        <!-- Right Side: Live opportunities & profit counts (Aligned Grid) -->
+        <div class="grid grid-cols-[auto_auto] gap-x-6 gap-y-2.5 shrink-0 select-none items-center">
+          <!-- Row 1: Scanned Opportunities (Light Gray) -->
+          <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold text-left">
+            Yakalanan Fırsatlar
+          </span>
+          <span class="text-base font-black font-mono text-gray-300 min-w-[70px] text-right">
+            +{{ totalScanned }}
+          </span>
+
+          <!-- Row 2: Profit Opportunities (Blue) -->
+          <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold text-left">
+            Kâr Fırsatları
+          </span>
+          <span class="text-base font-black font-mono text-blue-400 min-w-[70px] text-right flex items-center justify-end gap-1.5">
+            {{ formatCumulativeProfit }}
+            <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4 h-4 select-none pointer-events-none brightness-110" alt="RLT" />
           </span>
         </div>
 
@@ -1108,17 +1135,17 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.15);
 }
 
-/* Footer author name animation */
+/* Footer creator name animation (dark gray & white) */
 .creator-name {
   position: relative;
   display: inline-block;
   font-weight: 800;
   cursor: default;
-  background: linear-gradient(135deg, #a855f7, #ffffff, #3b82f6, #a855f7);
+  background: linear-gradient(135deg, #4b5563, #ffffff, #4b5563);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: shine-gradient 3s linear infinite;
+  animation: shine-gradient 3s ease-in-out infinite;
 }
 
 @keyframes shine-gradient {
