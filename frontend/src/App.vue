@@ -793,16 +793,35 @@ onUnmounted(() => {
     </main>
 
     <!-- Footer -->
-    <footer class="w-full bg-black/30 backdrop-blur-sm border-t border-[rgba(255,255,255,0.03)] py-8 px-6 text-center text-xs space-y-4 relative z-10 opacity-60 hover:opacity-100 transition-opacity duration-300">
-      <div class="flex justify-center items-center gap-3">
-        <span class="font-outfit uppercase font-semibold text-gray-400 tracking-widest text-[10px]">&copy; 2026 Rollercoinmarkt.com</span>
-      </div>
-      <p class="text-gray-600 max-w-lg mx-auto leading-relaxed">
-        Rollercoinmarkt is an independent fan project. It is not affiliated with, authorized, or endorsed by RollerCoin.
-      </p>
-      <div class="flex justify-center items-center gap-1.5 text-gray-500">
-        <span>developing by</span>
-        <span class="creator-name">kryptonn567</span>
+    <footer class="w-full bg-[#050409] border-t border-white/5 py-10 px-8 relative z-10">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+        
+        <!-- Left Side: Brand Logo and Text Info -->
+        <div class="flex items-center md:items-start gap-4 text-left w-full md:w-auto">
+          <img :src="faviconImg" class="w-16 h-16 object-contain shrink-0 mt-1 select-none pointer-events-none" alt="Logo" />
+          <div class="flex flex-col gap-1">
+            <span class="text-lg md:text-xl font-black font-outfit uppercase tracking-widest text-white select-none">
+              ROLLERCOINMARKT
+            </span>
+            <span class="font-outfit uppercase font-semibold text-gray-400 tracking-widest text-[9px]">&copy; 2026 Rollercoinmarkt.com</span>
+            <p class="text-gray-500 text-xs max-w-xl leading-relaxed mt-1">
+              Rollercoinmarkt is an independent fan project. It is not affiliated with, authorized, or endorsed by RollerCoin.
+            </p>
+            <div class="flex items-center gap-1 text-[11px] text-gray-500 mt-2">
+              <span>developing by</span>
+              <span class="creator-name">kryptonn567</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Live opportunities count -->
+        <div class="flex flex-col items-center md:items-end justify-center md:justify-start text-center md:text-right shrink-0 self-center md:self-end">
+          <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Yakalanan Fırsatlar</span>
+          <span class="text-2xl md:text-3xl font-black font-mono text-emerald-400 mt-1 drop-shadow-[0_0_12px_rgba(52,211,153,0.4)]">
+            {{ totalScanned }}
+          </span>
+        </div>
+
       </div>
     </footer>
 
