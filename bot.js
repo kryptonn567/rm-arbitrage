@@ -65,6 +65,7 @@ const localWss = new WebSocket.Server({ server });
 
 let totalScannedCount = 0;
 let cumulativeProfitSum = 0;
+const activeSinceTime = new Date('2026-08-17T01:32:48+03:00').getTime();
 
 const statsPath = path.join(__dirname, 'stats.json');
 try {
@@ -103,7 +104,8 @@ localWss.on('connection', (ws) => {
             type: 'history',
             data: opportunitiesHistory,
             totalScanned: totalScannedCount,
-            cumulativeProfit: cumulativeProfitSum
+            cumulativeProfit: cumulativeProfitSum,
+            activeSince: activeSinceTime
         })
     );
 });
@@ -343,7 +345,8 @@ async function connect() {
                                 type: 'opportunity',
                                 data: opportunity,
                                 totalScanned: totalScannedCount,
-                                cumulativeProfit: cumulativeProfitSum
+                                cumulativeProfit: cumulativeProfitSum,
+                                activeSince: activeSinceTime
                             });
                         }
                     }

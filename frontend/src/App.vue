@@ -13,6 +13,23 @@ const opportunities = ref([])
 const totalScanned = ref(0)
 const cumulativeProfit = ref(0)
 const minProfit = ref(0.01)
+const activeSince = ref(null)
+
+const activeSinceText = computed(() => {
+  if (!activeSince.value) return ''
+  const dateStr = activeSince.value.toLocaleString()
+  const prefixes = {
+    EN: 'Active since:',
+    TR: 'Aktiflik Başlangıcı:',
+    ES: 'Activo desde:',
+    PT: 'Ativo desde:',
+    ID: 'Aktif sejak:',
+    FR: 'Actif depuis:',
+    DE: 'Aktiv seit:'
+  }
+  const prefix = prefixes[currentLanguage.value] || 'Active since:'
+  return `${prefix} ${dateStr}`
+})
 
 const formatCumulativeProfit = computed(() => {
   const val = cumulativeProfit.value
@@ -675,6 +692,7 @@ const connectWebSocket = () => {
         opportunities.value = data.data.map(item => ({ ...item, time: new Date(item.timestamp) }))
         totalScanned.value = data.totalScanned !== undefined ? data.totalScanned : opportunities.value.length
         cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : opportunities.value.reduce((acc, o) => acc + o.netProfitMargin, 0)
+        activeSince.value = data.activeSince ? new Date(data.activeSince) : null
       } else if (data.type === 'opportunity') {
         const newItem = {
           ...data.data,
@@ -683,6 +701,9 @@ const connectWebSocket = () => {
         opportunities.value.unshift(newItem)
         totalScanned.value = data.totalScanned !== undefined ? data.totalScanned : totalScanned.value + 1
         cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : cumulativeProfit.value + data.data.netProfitMargin
+        if (data.activeSince && !activeSince.value) {
+          activeSince.value = new Date(data.activeSince)
+        }
         playAlertSound()
         
         if (opportunities.value.length > 150) {
@@ -1022,42 +1043,13 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <div class="col-span-1 md:col-span-3 border-t md:border-t-0 md:border-l border-white/5 flex flex-col items-center justify-center p-6 bg-white/[0.01] relative">
-            <div 
-              @click="showTierModal = true"
-              class="absolute top-0 right-0 w-10 h-10 cursor-pointer group/fold z-30"
-              :title="t('accessTiers')"
-            >
-              <div class="absolute top-0 right-0 w-0 h-0 border-t-[40px] border-t-white/10 border-l-[40px] border-l-transparent transition-all group-hover/fold:border-t-white/20"></div>
-              <div class="absolute top-0 right-0 w-0 h-0 border-b-[40px] border-b-transparent border-r-[40px] border-r-black/40 shadow-md"></div>
-              <span class="absolute top-1.5 right-2.5 text-xs font-black text-white/50 group-hover/fold:text-white transition-colors">?</span>
+          <div class="col-span-1 md:col-span-3 border-t md:border-t-0 md:border-l border-white/5 flex flex-col items-center justify-center p-6 bg-white/[0.01] relative overflow-hidden">
+            <!-- Coming Soon Display -->
+            <div class="flex flex-col items-center justify-center select-none">
+              <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black text-emerald-400 uppercase tracking-widest shadow-md">
+                Coming Soon
+              </span>
             </div>
-
-            <div class="flex items-end gap-2 h-12">
-              <div class="w-2.5 h-4 rounded transition-all" :class="getBarColor(1)"></div>
-              <div class="w-2.5 h-8 rounded transition-all" :class="getBarColor(2)"></div>
-              <div class="w-2.5 h-12 rounded transition-all" :class="getBarColor(3)"></div>
-            </div>
-            
-            <span class="text-base font-black uppercase tracking-widest mt-3 transition-colors" :class="getTierTextColor">
-              Tier {{ currentTier === 1 ? 'I' : currentTier === 2 ? 'II' : 'III' }}
-            </span>
-            
-            <span v-if="tierTimer > 0" class="text-xs font-mono mt-1.5 font-bold transition-colors" :class="getTimerTextColor">
-              {{ formatTimer(tierTimer) }} {{ t('tierRemaining') }}
-            </span>
-            
-            <button 
-              @click="handleWatchAd"
-              class="relative mt-4 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-[10px] font-black text-white transition-all uppercase tracking-wider cursor-pointer pr-10 group/up"
-            >
-              <span>{{ currentTier === 3 ? t('watchAdMaintain') : t('watchAdUpgrade') }}</span>
-              <div class="absolute -top-2 -right-2 bg-white text-black w-6.5 h-6.5 rounded-full flex items-center justify-center shadow-lg border border-black/20 group-hover/up:scale-110 transition-all" title="Rewarded Video Ad">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
-            </button>
           </div>
         </div>
 
@@ -1188,7 +1180,10 @@ onUnmounted(() => {
           </a>
         </div>
 
-        <div class="flex justify-center justify-self-center">
+        <div class="flex flex-col items-start justify-center justify-self-center gap-2">
+          <span v-if="activeSinceText" class="text-[9px] text-gray-500 uppercase tracking-widest font-bold select-none text-left">
+            {{ activeSinceText }}
+          </span>
           <div class="grid grid-cols-[auto_auto] gap-x-6 gap-y-2.5 shrink-0 select-none items-center">
             <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold text-left">
               {{ t('scannedOpportunities') }}
