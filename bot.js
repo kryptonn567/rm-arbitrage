@@ -43,11 +43,35 @@ try {
     console.log(`⚠️ Failed to load data.json: ${err.message}`);
 }
 
-const app = reportApp = express();
+const app = express();
 const server = http.createServer(app);
 const localWss = new WebSocket.Server({ server });
+
 let totalScannedCount = 0;
 let cumulativeProfitSum = 0;
+
+const statsPath = path.join(__dirname, 'stats.json');
+try {
+    if (fs.existsSync(statsPath)) {
+        const stats = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
+        totalScannedCount = stats.totalScanned || 0;
+        cumulativeProfitSum = stats.cumulativeProfit || 0;
+    }
+} catch (e) {
+    // Ignore error loading stats
+}
+
+function saveStats() {
+    try {
+        fs.writeFileSync(statsPath, JSON.stringify({
+            totalScanned: totalScannedCount,
+            cumulativeProfit: cumulativeProfitSum
+        }, null, 2), 'utf8');
+    } catch (e) {
+        // Ignore error saving stats
+    }
+}
+
 const opportunitiesHistory = [];
 const frontendDistPath = path.join(__dirname, 'frontend', 'dist');
 
@@ -185,6 +209,7 @@ async function connect() {
                         if (netProfitMargin > 0) {
                             totalScannedCount++;
                             cumulativeProfitSum += netProfitMargin;
+                            saveStats();
                             const opportunity = {
                                 itemId: itemData.item_id,
                                 itemName: itemNamesMap[itemData.item_id] || itemData.item_id,
