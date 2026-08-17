@@ -225,6 +225,18 @@ async function fetchItemMetadata(itemId, itemType) {
     return null;
 }
 
+function subtractOneUnit(priceMicro) {
+    let trailingZeros = 0;
+    let temp = priceMicro;
+    while (temp > 0 && temp % 10 === 0) {
+        trailingZeros++;
+        temp = Math.floor(temp / 10);
+    }
+    const exponent = Math.min(4, trailingZeros);
+    const amountToSubtract = Math.pow(10, exponent);
+    return Math.max(1, priceMicro - amountToSubtract);
+}
+
 async function connect() {
     try {
         const token = await auth.getAccessToken();
@@ -252,8 +264,10 @@ async function connect() {
                         const order0 = marketData.list[0];
                         const order1 = marketData.list[1];
 
-                        const index1PriceRlt = order1.price / 1000000;
-                        const newSellingPrice = index1PriceRlt / (1 + 0.05);
+                        const index1PriceMicro = order1.price;
+                        const targetListedPriceMicro = subtractOneUnit(index1PriceMicro);
+                        const targetListedPrice = targetListedPriceMicro / 1000000;
+                        const newSellingPrice = targetListedPrice / 1.05;
                         const index0PriceRlt = order0.price / 1000000;
                         const quantity = order0.quantity;
 
