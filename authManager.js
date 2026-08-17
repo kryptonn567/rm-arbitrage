@@ -36,10 +36,10 @@ class AuthManager {
 
     async refresh() {
         if (!this.refreshToken) {
-            throw new Error('REFRESH_TOKEN bulunamadı.');
+            throw new Error('REFRESH_TOKEN not found.');
         }
 
-        console.log('🔄 Refresh token kullanılıyor...');
+        console.log('🔄 Refresh token is being used...');
 
         const response = await fetch(
             'https://rollercoin.com/api/auth/refresh',
@@ -60,18 +60,18 @@ class AuthManager {
 
         if (!response.ok) {
             console.error('❌ Refresh response:', JSON.stringify(result, null, 2));
-            throw new Error(`Refresh başarısız: HTTP ${response.status}`);
+            throw new Error(`Refresh failed: HTTP ${response.status}`);
         }
 
         if (!result.success || !result.data) {
-            throw new Error(`Refresh reddedildi: ${result.error || 'Bilinmeyen hata'}`);
+            throw new Error(`Refresh denied: ${result.error || 'Unknown error'}`);
         }
 
         const newAccessToken = result.data.access_token;
         const newRefreshToken = result.data.refresh_token;
 
         if (!newAccessToken || !newRefreshToken) {
-            throw new Error('Refresh response içinde token bulunamadı.');
+            throw new Error('Tokens not found in refresh response.');
         }
 
         this.accessToken = newAccessToken;
@@ -83,8 +83,8 @@ class AuthManager {
         process.env.TOKEN = newAccessToken;
         process.env.REFRESH_TOKEN = newRefreshToken;
 
-        console.log('✅ Access token yenilendi.');
-        console.log('💾 Yeni tokenlar .env dosyasına kaydedildi.');
+        console.log('✅ Access token refreshed.');
+        console.log('💾 New tokens saved to .env file.');
 
         return this.accessToken;
     }

@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const auth = new AuthManager();
 
 if (!WS_URL) {
-    console.error("❌ HATA: .env dosyasında WS_URL bulunamadı!");
+    console.error("❌ ERROR: WS_URL not found in .env file!");
     process.exit(1);
 }
 
@@ -38,12 +38,12 @@ try {
         }
     });
 
-    console.log(`ℹ️ data.json başarıyla yüklendi. ${Object.keys(itemNamesMap).length} adet eşya eşleştirildi.`);
+    console.log(`ℹ️ data.json successfully loaded. ${Object.keys(itemNamesMap).length} items matched.`);
 } catch (err) {
-    console.log(`⚠️ data.json yüklenemedi: ${err.message}`);
+    console.log(`⚠️ Failed to load data.json: ${err.message}`);
 }
 
-const app = express();
+const app = reportApp = express();
 const server = http.createServer(app);
 const localWss = new WebSocket.Server({ server });
 let totalScannedCount = 0;
@@ -82,8 +82,8 @@ const headers = {
     'Origin': 'https://rollercoin.com'
 };
 
-function hamFiyatiBul(tradeOffersBase64, rehberFiyat) {
-    if (!tradeOffersBase64 || !rehberFiyat) {
+function findRawPrice(tradeOffersBase64, guidePrice) {
+    if (!tradeOffersBase64 || !guidePrice) {
         return null;
     }
 
@@ -106,12 +106,12 @@ function hamFiyatiBul(tradeOffersBase64, rehberFiyat) {
             const decoded = msgpack.decode(rawBuffer);
 
             if (Array.isArray(decoded) && decoded.length > 0) {
-                const fiyatlar = decoded
+                const prices = decoded
                     .map(d => d.price || d.p || null)
                     .filter(p => p !== null);
 
-                if (fiyatlar.length > 0) {
-                    return Math.min(...fiyatlar);
+                if (prices.length > 0) {
+                    return Math.min(...prices);
                 }
             } else if (typeof decoded === 'object' && decoded !== null) {
                 if (decoded.price) return decoded.price;
@@ -121,11 +121,11 @@ function hamFiyatiBul(tradeOffersBase64, rehberFiyat) {
             // Ignore msgpack decoding errors
         }
 
-        const taramaLimiti = Math.min(rawBuffer.length - 4, 150);
-        for (let i = 0; i <= taramaLimiti; i++) {
-            const beFiyat = rawBuffer.readUInt32BE(i);
-            if (Math.abs(beFiyat - rehberFiyat) <= 50000) {
-                return beFiyat;
+        const scanLimit = Math.min(rawBuffer.length - 4, 150);
+        for (let i = 0; i <= scanLimit; i++) {
+            const bePrice = rawBuffer.readUInt32BE(i);
+            if (Math.abs(bePrice - guidePrice) <= 50000) {
+                return bePrice;
             }
         }
 
@@ -140,13 +140,13 @@ async function connect() {
         const token = await auth.getAccessToken();
         const wsUrl = WS_URL.replace('{token}', token);
 
-        console.log(`🔗 Uzak sunucuya bağlanılıyor: ${new URL(wsUrl).host}`);
+        console.log(`🔗 Connecting to remote server: ${new URL(wsUrl).host}`);
 
         const ws = new WebSocket(wsUrl, { headers });
 
         ws.on('open', () => {
-            console.log('🟢 Arbitraj Botu Aktif, kârlı fırsatlar bekleniyor...');
-            console.log(`🌐 Site adresi: http://localhost:${PORT}`);
+            console.log('🟢 Arbitrage Bot Active, waiting for profitable opportunities...');
+            console.log(`🌐 Site URL: http://localhost:${PORT}`);
             console.log('------------------------------------------------------------------');
         });
 
@@ -159,41 +159,41 @@ async function connect() {
                     const marketData = itemData.data;
 
                     if (marketData && marketData.list && marketData.list.length >= 2) {
-                        const emir0 = marketData.list[0];
-                        const emir1 = marketData.list[1];
+                        const order0 = marketData.list[0];
+                        const order1 = marketData.list[1];
 
-                        const index1FiyatRlt = emir1.price / 1000000;
-                        const yeniSatisFiyati = index1FiyatRlt / (1 + 0.05);
-                        const index0FiyatRlt = emir0.price / 1000000;
-                        const miktar = emir0.quantity;
+                        const index1PriceRlt = order1.price / 1000000;
+                        const newSellingPrice = index1PriceRlt / (1 + 0.05);
+                        const index0PriceRlt = order0.price / 1000000;
+                        const quantity = order0.quantity;
 
-                        const onKontrolKarMarji = (yeniSatisFiyati - index0FiyatRlt) * miktar;
-                        if (onKontrolKarMarji <= 0) {
+                        const preCheckProfitMargin = (newSellingPrice - index0PriceRlt) * quantity;
+                        if (preCheckProfitMargin <= 0) {
                             return;
                         }
 
-                        let gercekAlisFiyatiRlt = index0FiyatRlt;
+                        let actualBuyPriceRlt = index0PriceRlt;
                         if (marketData.tradeOffers) {
-                            const hamBulunan = hamFiyatiBul(marketData.tradeOffers, emir0.price);
-                            if (hamBulunan) {
-                                gercekAlisFiyatiRlt = hamBulunan / 1000000;
+                            const rawFound = findRawPrice(marketData.tradeOffers, order0.price);
+                            if (rawFound) {
+                                actualBuyPriceRlt = rawFound / 1000000;
                             }
                         }
 
-                        const kesinKarMarji = (yeniSatisFiyati - gercekAlisFiyatiRlt) * miktar;
+                        const netProfitMargin = (newSellingPrice - actualBuyPriceRlt) * quantity;
 
-                        if (kesinKarMarji > 0) {
+                        if (netProfitMargin > 0) {
                             totalScannedCount++;
-                            cumulativeProfitSum += kesinKarMarji;
+                            cumulativeProfitSum += netProfitMargin;
                             const opportunity = {
                                 itemId: itemData.item_id,
                                 itemName: itemNamesMap[itemData.item_id] || itemData.item_id,
                                 itemFilename: itemFilenamesMap[itemData.item_id] || '',
                                 itemType: itemData.item_type,
-                                gercekAlisFiyatiRlt: gercekAlisFiyatiRlt,
-                                yeniSatisFiyati: yeniSatisFiyati,
-                                quantity: miktar,
-                                kesinKarMarji: kesinKarMarji,
+                                actualBuyPriceRlt: actualBuyPriceRlt,
+                                newSellingPrice: newSellingPrice,
+                                quantity: quantity,
+                                netProfitMargin: netProfitMargin,
                                 timestamp: Date.now()
                             };
 
@@ -203,11 +203,11 @@ async function connect() {
                                 opportunitiesHistory.pop();
                             }
 
-                            console.log(`\n🚀 ARBİTRAJ FIRSATI YAKALANDI!`);
-                            console.log(`📦 Eşya: ${opportunity.itemName} (${opportunity.itemType})`);
-                            console.log(`🏷️ Gerçek Alış Fiyatı : ${opportunity.gercekAlisFiyatiRlt.toFixed(6)} RLT`);
-                            console.log(`📈 Hedef Satış Fiyatı : ${opportunity.yeniSatisFiyati.toFixed(6)} RLT (Adet: ${opportunity.quantity})`);
-                            console.log(`\x1b[32m💚 NET KÂR MARJI     : +${opportunity.kesinKarMarji.toFixed(6)} RLT\x1b[0m`);
+                            console.log(`\n🚀 ARBITRAGE OPPORTUNITY DETECTED!`);
+                            console.log(`📦 Item: ${opportunity.itemName} (${opportunity.itemType})`);
+                            console.log(`🏷️ Actual Buy Price : ${opportunity.actualBuyPriceRlt.toFixed(6)} RLT`);
+                            console.log(`📈 Target Selling Price : ${opportunity.newSellingPrice.toFixed(6)} RLT (Qty: ${opportunity.quantity})`);
+                            console.log(`\x1b[32m💚 NET PROFIT MARGIN   : +${opportunity.netProfitMargin.toFixed(6)} RLT\x1b[0m`);
                             console.log('------------------------------------------------------------------');
 
                             broadcastToClients({
@@ -225,20 +225,20 @@ async function connect() {
         });
 
         ws.on('close', () => {
-            console.log('🔴 Bağlantı koptu. 5 saniye içinde yeniden bağlanılıyor...');
+            console.log('🔴 Connection lost. Reconnecting in 5 seconds...');
             setTimeout(connect, 5000);
         });
 
         ws.on('error', (err) => {
-            console.error('WebSocket Hatası:', err.message);
+            console.error('WebSocket Error:', err.message);
         });
     } catch (error) {
-        console.error('❌ Bağlantı/Auth hatası:', error.message);
+        console.error('❌ Connection/Auth error:', error.message);
         setTimeout(connect, 5000);
     }
 }
 
 server.listen(PORT, () => {
-    console.log(`🚀 Sunucu başlatıldı: http://localhost:${PORT}`);
+    console.log(`🚀 Server started: http://localhost:${PORT}`);
     connect();
 });

@@ -272,7 +272,7 @@ const connectWebSocket = () => {
       if (data.type === 'history') {
         opportunities.value = data.data.map(item => ({ ...item, time: new Date(item.timestamp) }))
         totalScanned.value = data.totalScanned !== undefined ? data.totalScanned : opportunities.value.length
-        cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : opportunities.value.reduce((acc, o) => acc + o.kesinKarMarji, 0)
+        cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : opportunities.value.reduce((acc, o) => acc + o.netProfitMargin, 0)
       } else if (data.type === 'opportunity') {
         const newItem = {
           ...data.data,
@@ -280,7 +280,7 @@ const connectWebSocket = () => {
         }
         opportunities.value.unshift(newItem)
         totalScanned.value = data.totalScanned !== undefined ? data.totalScanned : totalScanned.value + 1
-        cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : cumulativeProfit.value + data.data.kesinKarMarji
+        cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : cumulativeProfit.value + data.data.netProfitMargin
         playAlertSound()
         
         if (opportunities.value.length > 150) {
@@ -300,18 +300,18 @@ const connectWebSocket = () => {
 
 const maxProfitValue = computed(() => {
   if (opportunities.value.length === 0) return 0
-  return Math.max(...opportunities.value.map(o => o.kesinKarMarji))
+  return Math.max(...opportunities.value.map(o => o.netProfitMargin))
 })
 
 const averageProfitValue = computed(() => {
   if (opportunities.value.length === 0) return 0
-  const sum = opportunities.value.reduce((acc, o) => acc + o.kesinKarMarji, 0)
+  const sum = opportunities.value.reduce((acc, o) => acc + o.netProfitMargin, 0)
   return sum / opportunities.value.length
 })
 
 const filteredOpportunities = computed(() => {
   return opportunities.value.filter(o => {
-    const matchesProfit = o.kesinKarMarji >= minProfit.value
+    const matchesProfit = o.netProfitMargin >= minProfit.value
     
     let matchesCategory = true
     const typeLower = String(o.itemType || '').toLowerCase()
@@ -331,7 +331,7 @@ const filteredOpportunities = computed(() => {
     }
     
     const matchesBalance = rltBalance.value !== '' && rltBalance.value !== null
-      ? o.gercekAlisFiyatiRlt <= parseFloat(rltBalance.value)
+      ? o.actualBuyPriceRlt <= parseFloat(rltBalance.value)
       : true
     return matchesProfit && matchesCategory && matchesBalance
   })
@@ -385,7 +385,7 @@ const getItemImageUrl = (opp) => {
 }
 
 const handleBuyClick = (opp) => {
-  const targetPriceText = parseFloat(opp.yeniSatisFiyati.toFixed(6)).toString()
+  const targetPriceText = parseFloat(opp.newSellingPrice.toFixed(6)).toString()
   navigator.clipboard.writeText(targetPriceText).catch(err => {
     console.error('Clipboard copy failed:', err)
   })
@@ -687,7 +687,7 @@ onUnmounted(() => {
               <div class="col-span-1 md:col-span-2 flex flex-col relative z-10 text-left">
                 <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Gerçek Alış</span>
                 <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base text-emerald-400 font-semibold flex items-center gap-1.5">
-                  {{ formatRLT(opp.gercekAlisFiyatiRlt) }}
+                  {{ formatRLT(opp.actualBuyPriceRlt) }}
                   <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none" alt="RLT" />
                 </span>
               </div>
@@ -695,7 +695,7 @@ onUnmounted(() => {
               <div class="col-span-1 md:col-span-2 flex flex-col relative z-10 text-left">
                 <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Hedef Satış (Net)</span>
                 <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base text-gray-300 flex items-center gap-1.5">
-                  {{ formatRLT(opp.yeniSatisFiyati) }}
+                  {{ formatRLT(opp.newSellingPrice) }}
                   <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none" alt="RLT" />
                 </span>
               </div>
@@ -704,7 +704,7 @@ onUnmounted(() => {
                 <div class="text-left">
                   <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Net Kazanç</span>
                   <div class="text-base md:text-lg font-black font-outfit text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.2)] flex items-center gap-1.5">
-                    +{{ formatRLT(opp.kesinKarMarji) }}
+                    +{{ formatRLT(opp.netProfitMargin) }}
                     <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none" alt="RLT" />
                   </div>
                 </div>
