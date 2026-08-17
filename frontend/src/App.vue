@@ -318,7 +318,7 @@ const filteredOpportunities = computed(() => {
     if (selectedCategory.value === 'Miners') {
       matchesCategory = typeLower.startsWith('miner')
     } else if (selectedCategory.value === 'Parts') {
-      matchesCategory = typeLower.startsWith('part')
+      matchesCategory = typeLower.startsWith('part') || typeLower === 'mutation_component'
     } else if (selectedCategory.value === 'Racks') {
       matchesCategory = typeLower.startsWith('rack')
     } else if (selectedCategory.value === 'Batteries') {
@@ -326,6 +326,7 @@ const filteredOpportunities = computed(() => {
     } else if (selectedCategory.value === 'Other') {
       matchesCategory = !typeLower.startsWith('miner') && 
                         !typeLower.startsWith('part') && 
+                        typeLower !== 'mutation_component' &&
                         !typeLower.startsWith('rack') && 
                         !typeLower.startsWith('battery')
     }
@@ -367,8 +368,29 @@ const formatRLT = (val) => {
   return parseFloat(Number(val).toFixed(6))
 }
 
+const formatItemType = (type) => {
+  const typeLower = String(type || '').toLowerCase()
+  if (typeLower === 'mutation_component') {
+    return 'parts'
+  }
+  return type
+}
+
 const getItemImageUrl = (opp) => {
   const typeLower = String(opp.itemType || '').toLowerCase()
+  if (typeLower === 'mutation_component') {
+    return `https://static.rollercoin.com/static/img/storage/mutation_components/${opp.itemId}.png`
+  }
+
+  if (typeLower === 'utility_item') {
+    const nameKey = opp.itemFilename || String(opp.itemName || opp.itemId)
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '_')
+      .replace(/[^a-z0-9_]/g, '')
+    return `https://static.rollercoin.com/static/img/market/utility_items/${nameKey}.gif`
+  }
+
   const isMiner = typeLower.startsWith('miner')
   const typeFolder = typeLower.endsWith('s') ? typeLower : `${typeLower}s`
   
@@ -662,7 +684,8 @@ onUnmounted(() => {
               <img 
                 :src="getItemImageUrl(opp)" 
                 referrerpolicy="no-referrer"
-                class="absolute left-6 top-1/2 -translate-y-1/2 w-40 h-40 opacity-20 group-hover:opacity-35 rotate-[-15deg] group-hover:rotate-[-5deg] group-hover:scale-110 transition-all duration-500 pointer-events-none select-none z-0 object-contain" 
+                class="absolute left-6 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-35 rotate-[-15deg] group-hover:rotate-[-5deg] group-hover:scale-110 transition-all duration-500 pointer-events-none select-none z-0 object-contain" 
+                :class="['mutation_component', 'utility_item'].includes(String(opp.itemType).toLowerCase()) ? 'w-24 h-24' : 'w-40 h-40'"
                 alt=""
                 @error="(e) => { e.target.style.display = 'none'; }"
               />
@@ -670,7 +693,7 @@ onUnmounted(() => {
               <div class="col-span-1 md:col-span-3 flex flex-col gap-2 relative z-10 text-left">
                 <div class="flex items-center gap-2">
                   <span class="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] text-gray-300 font-semibold uppercase tracking-wider">
-                    {{ opp.itemType }}
+                    {{ formatItemType(opp.itemType) }}
                   </span>
                   <span class="text-xs text-gray-500 font-mono">{{ timeAgo(opp.time) }}</span>
                 </div>

@@ -20,15 +20,26 @@ const itemNamesMap = {};
 const itemFilenamesMap = {};
 
 try {
-    const dataJson = JSON.parse(
-        fs.readFileSync(
-            path.join(__dirname, 'data.json'),
-            'utf8'
-        )
-    );
+    const dataPath = path.join(__dirname, 'data.json');
+    const dataJson = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+    let hasChanges = false;
 
     dataJson.forEach(item => {
         if (item.id) {
+            let name = item.name;
+            if (name && typeof name === 'string' && name.trim().startsWith('{')) {
+                try {
+                    name = JSON.parse(name);
+                } catch (e) {
+                    // Ignore JSON parsing errors
+                }
+            }
+
+            if (name && typeof name === 'object') {
+                item.name = name.en || item.id;
+                hasChanges = true;
+            }
+
             if (item.name) {
                 itemNamesMap[item.id] = item.name;
             }
@@ -37,6 +48,11 @@ try {
             }
         }
     });
+
+    if (hasChanges) {
+        fs.writeFileSync(dataPath, JSON.stringify(dataJson, null, 2), 'utf8');
+        console.log('🧹 Cleaned up localized name entries in data.json');
+    }
 
     console.log(`ℹ️ data.json successfully loaded. ${Object.keys(itemNamesMap).length} items matched.`);
 } catch (err) {
@@ -159,6 +175,56 @@ function findRawPrice(tradeOffersBase64, guidePrice) {
     }
 }
 
+async function fetchItemMetadata(itemId, itemType) {
+    try {
+        const token = await auth.getAccessToken();
+        const response = await fetch(`https://rollercoin.com/api/marketplace/item-info?itemId=${itemId}&itemType=${itemType}&currency=RLT`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Cookie': `token=${token}`,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
+                'Origin': 'https://rollercoin.com'
+            }
+        });
+
+        if (!response.ok) {
+            console.error(`❌ RollerCoin API Error (item-info): HTTP status ${response.status} ${response.statusText}`);
+            const body = await response.text();
+            console.error(`Error body:`, body);
+            return null;
+        }
+
+        const result = await response.json();
+        const itemInfo = result.data || result;
+
+        if (itemInfo && (itemInfo.name || itemInfo.title)) {
+            let name = itemInfo.name || itemInfo.title;
+            if (typeof name === 'string' && name.trim().startsWith('{')) {
+                try {
+                    name = JSON.parse(name);
+                } catch (e) {
+                    // Ignore JSON parsing errors
+                }
+            }
+            if (name && typeof name === 'object') {
+                name = name.en || itemId;
+            }
+            const filename = itemInfo.filename || itemInfo.item_filename || itemInfo.image || '';
+
+            return {
+                id: itemId,
+                name: name,
+                filename: filename
+            };
+        }
+    } catch (e) {
+        console.error(`⚠️ Failed to fetch metadata for item ${itemId}:`, e.message);
+    }
+    return null;
+}
+
 async function connect() {
     try {
         const token = await auth.getAccessToken();
@@ -174,7 +240,7 @@ async function connect() {
             console.log('------------------------------------------------------------------');
         });
 
-        ws.on('message', (data) => {
+        ws.on('message', async (data) => {
             try {
                 const payload = JSON.parse(data.toString());
 
@@ -194,6 +260,30 @@ async function connect() {
                         const preCheckProfitMargin = (newSellingPrice - index0PriceRlt) * quantity;
                         if (preCheckProfitMargin <= 0) {
                             return;
+                        }
+
+                        const itemId = itemData.item_id;
+                        const itemType = itemData.item_type;
+                        if (!itemNamesMap[itemId]) {
+                            console.log(`🔍 Unknown item detected (${itemId}). Fetching metadata from RollerCoin API...`);
+                            const metadata = await fetchItemMetadata(itemId, itemType);
+                            if (metadata) {
+                                itemNamesMap[itemId] = metadata.name;
+                                itemFilenamesMap[itemId] = metadata.filename;
+
+                                try {
+                                    const dataPath = path.join(__dirname, 'data.json');
+                                    let currentData = [];
+                                    if (fs.existsSync(dataPath)) {
+                                        currentData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+                                    }
+                                    currentData.push(metadata);
+                                    fs.writeFileSync(dataPath, JSON.stringify(currentData, null, 2), 'utf8');
+                                    console.log(`💾 Saved new item metadata for "${metadata.name}" to data.json`);
+                                } catch (err) {
+                                    console.error('⚠️ Failed to save new item to data.json:', err.message);
+                                }
+                            }
                         }
 
                         let actualBuyPriceRlt = index0PriceRlt;
