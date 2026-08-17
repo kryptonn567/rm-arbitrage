@@ -51,7 +51,409 @@ const volumeLevel = ref(0.3)
 const soundEnabled = computed(() => volumeLevel.value > 0)
 const showVolumeSlider = ref(false)
 const showLangDropdown = ref(false)
-const currentLanguage = ref('TR')
+const currentLanguage = ref('EN')
+
+const translations = {
+  EN: {
+    subtitle: "Automatically scans, calculates, and lists the most profitable instant arbitrage opportunities in the RollerCoin market.",
+    guide: "GUIDE",
+    soundSettings: "Volume Settings",
+    langTitle: "Change Language",
+    balancePlaceholder: "Enter your RLT balance here.",
+    balanceTooltip: "Enter your RLT balance to hide high-priced items you cannot afford and only see opportunities within your budget.",
+    minProfit: "Minimum Profit:",
+    all: "All",
+    miners: "Miners",
+    parts: "Parts",
+    racks: "Racks",
+    batteries: "Batteries",
+    other: "Other",
+    tierRemaining: "remaining",
+    watchAdMaintain: "watch ad to maintain tier",
+    watchAdUpgrade: "watch ad to upgrade tier",
+    qty: "Qty",
+    qtyUnit: "Units",
+    actualBuy: "Actual Buy",
+    targetSell: "Target Sell (Net)",
+    netProfit: "Net Profit",
+    buyBtn: "Buy",
+    showMore: "Show More",
+    waitingLive: "Waiting for Live Opportunities...",
+    emptyDesc: "As arbitrage opportunities are captured in the market, they will be displayed in this area.",
+    fanDisclaimer: "Rollercoinmarkt is an independent fan project. It is not affiliated with, authorized, or endorsed by RollerCoin.",
+    createdBy: "Created by",
+    scannedOpportunities: "Scanned Opportunities",
+    profitOpportunities: "Profit Opportunities",
+    accessTiers: "Access Tiers",
+    modalSubtitle: "Upgrade your tier to unlock advanced filtering tools and indicator features.",
+    standardPlan: "Standard",
+    advancedPlan: "Advanced",
+    premiumPlan: "Premium",
+    free: "Free",
+    watchAd1: "1 Watch Ad",
+    watchAd2: "1+1 Watch Ad",
+    tier1Feature1: "Basic opportunity feed",
+    tier1Feature2: "Standard search filter",
+    tier1Feature3: "1 active indicator bar",
+    tier2Feature1: "Affordability RLT filter",
+    tier2Feature2: "15-minute tier timer boost",
+    tier2Feature3: "2 active indicator bars",
+    tier3Feature1: "Dynamic maintainable timer",
+    tier3Feature2: "All features unlocked",
+    tier3Feature3: "3 active indicator bars",
+    modalDescription: "By default, you start with the Standard (Tier I) plan. Watching 1 video ad unlocks the Advanced (Tier II) plan for 15 minutes. If you do not watch another ad within these 15 minutes, your tier will be downgraded by one level. However, watching a second ad during this period upgrades you to the Premium (Tier III) plan. To maintain your Premium (Tier III) status, simply watch another ad within 15 minutes to reset the countdown and maximize your access time.",
+    currentTierLabel: "YOUR CURRENT TIER",
+    lockedLabel: "Locked (Watch Ad)",
+    now: "Now",
+    secAgo: "s ago",
+    minAgo: "m ago",
+    guideAlert: "RollerCoin Arbitrage Guide will be added soon!"
+  },
+  TR: {
+    subtitle: "RollerCoin marketindeki en kârlı anlık al-sat fırsatlarını otomatik olarak yakalar, hesaplar ve listeler.",
+    guide: "REHBER",
+    soundSettings: "Ses Ayarları",
+    langTitle: "Dili Değiştir",
+    balancePlaceholder: "RLT bakiyenizi girin.",
+    balanceTooltip: "Bütçenizin yetmediği yüksek fiyatlı eşyaları gizlemek ve sadece satın alabileceğiniz fırsatları görmek için RLT bakiyenizi girin.",
+    minProfit: "Minimum Kâr:",
+    all: "Tümü",
+    miners: "Madenciler",
+    parts: "Parçalar",
+    racks: "Raflar",
+    batteries: "Bataryalar",
+    other: "Diğer",
+    tierRemaining: "kaldı",
+    watchAdMaintain: "planı korumak için reklam izle",
+    watchAdUpgrade: "planı yükseltmek için reklam izle",
+    qty: "Miktar",
+    qtyUnit: "Adet",
+    actualBuy: "Gerçek Alış",
+    targetSell: "Hedef Satış (Net)",
+    netProfit: "Net Kazanç",
+    buyBtn: "Satın Al",
+    showMore: "Daha Fazla Göster",
+    waitingLive: "Canlı Fırsatlar Bekleniyor...",
+    emptyDesc: "Piyasada arbitraj fırsatları yakalandıkça bu alanda görüntülenecektir.",
+    fanDisclaimer: "Rollercoinmarkt bağımsız bir hayran projesidir. RollerCoin ile herhangi bir bağı, ortaklığı veya yetkilendirmesi yoktur.",
+    createdBy: "Geliştirici",
+    scannedOpportunities: "Yakalanan Fırsatlar",
+    profitOpportunities: "Kâr Fırsatları",
+    accessTiers: "Erişim Planları",
+    modalSubtitle: "Gelişmiş filtreleme araçlarını ve gösterge özelliklerini açmak için planınızı yükseltin.",
+    standardPlan: "Standart",
+    advancedPlan: "Gelişmiş",
+    premiumPlan: "Premium",
+    free: "Ücretsiz",
+    watchAd1: "1 Reklam İzle",
+    watchAd2: "1+1 Reklam İzle",
+    tier1Feature1: "Temel fırsat akışı",
+    tier1Feature2: "Standart arama filtresi",
+    tier1Feature3: "1 aktif gösterge çubuğu",
+    tier2Feature1: "Bütçe RLT filtresi",
+    tier2Feature2: "15 dakikalık plan süresi artışı",
+    tier2Feature3: "2 aktif gösterge çubuğu",
+    tier3Feature1: "Dinamik uzatılabilir zamanlayıcı",
+    tier3Feature2: "Tüm özellikler açık",
+    tier3Feature3: "3 aktif gösterge çubuğu",
+    modalDescription: "Varsayılan olarak Standart (Tier I) planla başlarsınız. 1 video reklam izlemek, Gelişmiş (Tier II) planın kilidini 15 dakika boyunca açar. Bu 15 dakika içinde başka bir reklam izlemezseniz planınız bir seviye düşürülür. Ancak bu süre içinde ikinci bir reklam izlemek sizi Premium (Tier III) plana yükseltir. Premium durumunuzu korumak için geri sayımı sıfırlamak ve erişim sürenizi en üst düzeye çıkarmak için 15 dakika içinde başka bir reklam izlemeniz yeterlidir.",
+    currentTierLabel: "MEVCUT PLANINIZ",
+    lockedLabel: "Kilitli (Reklam İzle)",
+    now: "Şimdi",
+    secAgo: "sn önce",
+    minAgo: "dk önce",
+    guideAlert: "RollerCoin Arbitraj Rehberi yakında eklenecektir!"
+  },
+  ES: {
+    subtitle: "Escanea, calcula y lista automáticamente las oportunidades de arbitraje instantáneo más rentables en el mercado de RollerCoin.",
+    guide: "GUÍA",
+    soundSettings: "Ajustes de Sonido",
+    langTitle: "Cambiar Idioma",
+    balancePlaceholder: "Introduce tu saldo de RLT aquí.",
+    balanceTooltip: "Introduce tu saldo de RLT para ocultar los artículos de alto precio que no puedes permitirte y ver solo las oportunidades dentro de tu presupuesto.",
+    minProfit: "Ganancia Mínima:",
+    all: "Todo",
+    miners: "Mineros",
+    parts: "Piezas",
+    racks: "Estantes",
+    batteries: "Baterías",
+    other: "Otros",
+    tierRemaining: "restante",
+    watchAdMaintain: "ver anuncio para mantener nivel",
+    watchAdUpgrade: "ver anuncio para subir de nivel",
+    qty: "Cant",
+    qtyUnit: "Unidades",
+    actualBuy: "Compra Real",
+    targetSell: "Venta Objetivo (Neto)",
+    netProfit: "Ganancia Neta",
+    buyBtn: "Comprar",
+    showMore: "Mostrar Más",
+    waitingLive: "Esperando Oportunidades en Vivo...",
+    emptyDesc: "A medida que se capturen oportunidades de arbitraje en el mercado, se mostrarán en esta área.",
+    fanDisclaimer: "Rollercoinmarkt es un proyecto independiente de fans. No está afiliado, autorizado ni respaldado por RollerCoin.",
+    createdBy: "Creado por",
+    scannedOpportunities: "Oportunidades Escaneadas",
+    profitOpportunities: "Oportunidades de Ganancia",
+    accessTiers: "Niveles de Acceso",
+    modalSubtitle: "Mejora tu nivel para desbloquear herramientas de filtrado avanzadas y funciones de indicadores.",
+    standardPlan: "Estándar",
+    advancedPlan: "Avanzado",
+    premiumPlan: "Premium",
+    free: "Gratis",
+    watchAd1: "Ver 1 Anuncio",
+    watchAd2: "Ver 1+1 Anuncio",
+    tier1Feature1: "Flujo de oportunidades básico",
+    tier1Feature2: "Filtro de búsqueda estándar",
+    tier1Feature3: "1 barra indicadora activa",
+    tier2Feature1: "Filtro RLT de asequibilidad",
+    tier2Feature2: "Impulso de temporizador de 15 minutos",
+    tier2Feature3: "2 barras indicadoras activas",
+    tier3Feature1: "Temporizador dinámico mantenible",
+    tier3Feature2: "Todas las funciones desbloqueadas",
+    tier3Feature3: "3 barras indicadoras activas",
+    modalDescription: "Por defecto, comienzas con el plan Estándar (Tier I). Ver 1 anuncio de video desbloquea el plan Avanzado (Tier II) durante 15 minutos. Si no ves otro anuncio dentro de estos 15 minutos, tu nivel bajará un rango. Sin embargo, ver un segundo anuncio durante este período te mejora al plan Premium (Tier III). Para mantener tu estado Premium, simplemente mira otro anuncio dentro de los 15 minutos para restablecer la cuenta regresiva.",
+    currentTierLabel: "TU NIVEL ACTUAL",
+    lockedLabel: "Bloqueado (Ver Anuncio)",
+    now: "Ahora",
+    secAgo: "s antes",
+    minAgo: "m antes",
+    guideAlert: "¡La Guía de Arbitraje de RollerCoin se agregará pronto!"
+  },
+  PT: {
+    subtitle: "Varre, calcula e lista automaticamente as oportunidades de arbitragem instantânea mais lucrativas no mercado de RollerCoin.",
+    guide: "GUIA",
+    soundSettings: "Configurações de Som",
+    langTitle: "Mudar Idioma",
+    balancePlaceholder: "Insira seu saldo de RLT aqui.",
+    balanceTooltip: "Insira seu saldo de RLT para ocultar itens de alto preço que você não pode pagar e ver apenas as oportunidades dentro do seu orçamento.",
+    minProfit: "Lucro Mínimo:",
+    all: "Tudo",
+    miners: "Mineradores",
+    parts: "Peças",
+    racks: "Racks",
+    batteries: "Baterias",
+    other: "Outros",
+    tierRemaining: "restante",
+    watchAdMaintain: "ver anúncio para manter o nível",
+    watchAdUpgrade: "ver anúncio para subir de nivel",
+    qty: "Qtd",
+    qtyUnit: "Unidades",
+    actualBuy: "Compra Real",
+    targetSell: "Venda Alvo (Líquido)",
+    netProfit: "Lucro Líquido",
+    buyBtn: "Comprar",
+    showMore: "Mostrar Mais",
+    waitingLive: "Aguardando Oportunidades ao Vivo...",
+    emptyDesc: "À medida que as oportunidades de arbitragem forem capturadas no mercado, elas serão exibidas nesta área.",
+    fanDisclaimer: "Rollercoinmarkt é um projeto de fãs independente. Não é afiliado, autorizado ou endossado pelo RollerCoin.",
+    createdBy: "Criado por",
+    scannedOpportunities: "Oportunidades Escaneadas",
+    profitOpportunities: "Oportunidades de Lucro",
+    accessTiers: "Níveis de Acesso",
+    modalSubtitle: "Atualize seu nível para desbloquear ferramentas de filtragem avançadas e recursos de indicadores.",
+    standardPlan: "Padrão",
+    advancedPlan: "Avançado",
+    premiumPlan: "Premium",
+    free: "Grátis",
+    watchAd1: "Ver 1 Anúncio",
+    watchAd2: "Ver 1+1 Anúncio",
+    tier1Feature1: "Feed de oportunidades básico",
+    tier1Feature2: "Filtro de busca padrão",
+    tier1Feature3: "1 barra indicadora ativa",
+    tier2Feature1: "Filtro RLT de acessibilidade",
+    tier2Feature2: "Impulso de temporizador de 15 minutos",
+    tier2Feature3: "2 barras indicadoras ativas",
+    tier3Feature1: "Temporizador dinâmico mantível",
+    tier3Feature2: "Todos os recursos desbloqueados",
+    tier3Feature3: "3 barras indicadoras ativas",
+    modalDescription: "Por padrão, você começa com o plano Padrão (Tier I). Assistir a 1 anúncio de vídeo desbloqueia o plan Avançado (Tier II) por 15 minutos. Se você não assistir a outro anúncio dentro desses 15 minutos, seu nível será rebaixado em um nível. No entanto, assistir a um segundo anúncio durante este período atualiza você para o plano Premium (Tier III). Para manter seu status Premium, basta assistir a outro anúncio dentro de 15 minutos para reiniciar a contagem regressiva.",
+    currentTierLabel: "SEU NÍVEL ATUAL",
+    lockedLabel: "Bloqueado (Ver Anúncio)",
+    now: "Agora",
+    secAgo: "s atrás",
+    minAgo: "m atrás",
+    guideAlert: "O Guia de Arbitragem do RollerCoin será adicionado em breve!"
+  },
+  ID: {
+    subtitle: "Secara otomatis memindai, menghitung, dan mencantumkan peluang arbitrase instan paling menguntungkan di pasar RollerCoin.",
+    guide: "PANDUAN",
+    soundSettings: "Pengaturan Suara",
+    langTitle: "Ubah Bahasa",
+    balancePlaceholder: "Masukkan saldo RLT Anda di sini.",
+    balanceTooltip: "Masukkan saldo RLT Anda untuk menyembunyikan item berharga tinggi yang tidak mampu Anda beli dan hanya melihat peluang sesuai anggaran Anda.",
+    minProfit: "Keuntungan Minimum:",
+    all: "Semua",
+    miners: "Penambang",
+    parts: "Bagian",
+    racks: "Rak",
+    batteries: "Baterai",
+    other: "Lainnya",
+    tierRemaining: "tersisa",
+    watchAdMaintain: "tonton iklan untuk mempertahankan tier",
+    watchAdUpgrade: "tonton iklan untuk meningkatkan tier",
+    qty: "Jml",
+    qtyUnit: "Unit",
+    actualBuy: "Beli Nyata",
+    targetSell: "Target Jual (Bersih)",
+    netProfit: "Keuntungan Bersih",
+    buyBtn: "Beli",
+    showMore: "Tampilkan Lebih Banyak",
+    waitingLive: "Menunggu Peluang Langsung...",
+    emptyDesc: "Saat peluang arbitrase ditangkap di pasar, peluang tersebut akan ditampilkan di area ini.",
+    fanDisclaimer: "Rollercoinmarkt adalah proyek penggemar independen. Tidak berafiliasi dengan, diizinkan, atau didukung oleh RollerCoin.",
+    createdBy: "Dibuat oleh",
+    scannedOpportunities: "Peluang Dipindai",
+    profitOpportunities: "Peluang Keuntungan",
+    accessTiers: "Tingkat Akses",
+    modalSubtitle: "Tingkatkan tingkat Anda untuk membuka kunci alat penyaringan tingkat lanjut dan fitur indikator.",
+    standardPlan: "Standar",
+    advancedPlan: "Lanjutan",
+    premiumPlan: "Premium",
+    free: "Gratis",
+    watchAd1: "Tonton 1 Iklan",
+    watchAd2: "Tonton 1+1 Iklan",
+    tier1Feature1: "Umpan peluang dasar",
+    tier1Feature2: "Filter pencarian standar",
+    tier1Feature3: "1 bilah indikator aktif",
+    tier2Feature1: "Filter keterjangkauan RLT",
+    tier2Feature2: "Peningkatan timer 15 menit",
+    tier2Feature3: "2 bilah indikator aktif",
+    tier3Feature1: "Timer dinamis yang dapat dipertahankan",
+    tier3Feature2: "Semua fitur terbuka",
+    tier3Feature3: "3 bilah indikator aktif",
+    modalDescription: "Secara default, Anda memulai dengan rencana Standar (Tier I). Menonton 1 iklan video membuka rencana Lanjutan (Tier II) selama 15 menit. Jika Anda tidak menonton iklan lain dalam 15 menit ini, tingkat Anda akan diturunkan satu tingkat. Namun, menonton iklan kedua selama periode ini akan meningkatkan Anda ke rencana Premium (Tier III). Untuk mempertahankan status Premium Anda, cukup tonton iklan lain dalam waktu 15 menit untuk menyetel ulang hitung mundur.",
+    currentTierLabel: "TINGKAT ANDA SAAT INI",
+    lockedLabel: "Terkunci (Tonton Iklan)",
+    now: "Sekarang",
+    secAgo: "d lalu",
+    minAgo: "m lalu",
+    guideAlert: "Panduan Arbitrase RollerCoin akan segera ditambahkan!"
+  },
+  FR: {
+    subtitle: "Scanne, calcule et répertorie automatiquement les opportunités d'arbitrage instantané les plus rentables sur le marché RollerCoin.",
+    guide: "GUIDE",
+    soundSettings: "Paramètres du Son",
+    langTitle: "Changer de Langue",
+    balancePlaceholder: "Entrez votre solde RLT ici.",
+    balanceTooltip: "Entrez votre solde RLT pour masquer les objets chers que vous ne pouvez pas vous offrir et ne voir que les opportunités correspondant à votre budget.",
+    minProfit: "Bénéfice Minimum :",
+    all: "Tout",
+    miners: "Mineurs",
+    parts: "Pièces",
+    racks: "Racks",
+    batteries: "Batteries",
+    other: "Autre",
+    tierRemaining: "restant",
+    watchAdMaintain: "regarder une pub pour maintenir le tier",
+    watchAdUpgrade: "regarder une pub pour améliorer le tier",
+    qty: "Qté",
+    qtyUnit: "Unités",
+    actualBuy: "Achat Réel",
+    targetSell: "Vente Cible (Net)",
+    netProfit: "Bénéfice Net",
+    buyBtn: "Acheter",
+    showMore: "Afficher Plus",
+    waitingLive: "En attente d'opportunités en direct...",
+    emptyDesc: "Au fur et à mesure que des opportunités d'arbitrage sont capturées sur le marché, elles s'afficheront dans cette zone.",
+    fanDisclaimer: "Rollercoinmarkt est un projet de fans indépendant. Il n'est pas affilié à, autorisé ou approuvé par RollerCoin.",
+    createdBy: "Créé par",
+    scannedOpportunities: "Opportunités Scannées",
+    profitOpportunities: "Opportunités de Bénéfice",
+    accessTiers: "Niveaux d'Accès",
+    modalSubtitle: "Améliorez votre niveau pour débloquer des outils de filtrage avancés et des fonctionnalités d'indicateurs.",
+    standardPlan: "Standard",
+    advancedPlan: "Avancé",
+    premiumPlan: "Premium",
+    free: "Gratuit",
+    watchAd1: "Regarder 1 Pub",
+    watchAd2: "Regarder 1+1 Pub",
+    tier1Feature1: "Flux d'opportunités de base",
+    tier1Feature2: "Filtre de recherche standard",
+    tier1Feature3: "1 barre d'indicateur active",
+    tier2Feature1: "Filtre d'abordabilité RLT",
+    tier2Feature2: "Boost de minuterie de 15 minutes",
+    tier2Feature3: "2 barres d'indicateurs actives",
+    tier3Feature1: "Minuterie dynamique maintenable",
+    tier3Feature2: "Toutes les fonctionnalités débloquées",
+    tier3Feature3: "3 barres d'indicateurs actives",
+    modalDescription: "Par défaut, vous commencez avec le plan Standard (Tier I). Regarder 1 publicité vidéo débloque le plan Avancé (Tier II) pendant 15 minutes. Si vous ne regardez pas une autre publicité dans ces 15 minutes, votre niveau sera rétrogradé d'un niveau. Cependant, regarder une deuxième publicité pendant cette période vous fait passer au plan Premium (Tier III). Pour maintenir votre statut Premium, regardez simplement une autre publicité dans les 15 minutes pour réinitialiser le compte à rebours.",
+    currentTierLabel: "VOTRE NIVEAU ACTUEL",
+    lockedLabel: "Verrouillé (Regarder Pub)",
+    now: "Maintenant",
+    secAgo: "s avant",
+    minAgo: "m avant",
+    guideAlert: "Le guide d'arbitrage RollerCoin sera bientôt ajouté !"
+  },
+  DE: {
+    subtitle: "Scannt, berechnet und listet automatisch die profitabelsten sofortigen Arbitrage-Möglichkeiten auf dem RollerCoin-Markt auf.",
+    guide: "ANLEITUNG",
+    soundSettings: "Toneinstellungen",
+    langTitle: "Sprache ändern",
+    balancePlaceholder: "Geben Sie hier Ihr RLT-Guthaben ein.",
+    balanceTooltip: "Geben Sie Ihr RLT-Guthaben ein, um teure Gegenstände auszublenden, die Sie sich nicht leisten können, und nur Möglichkeiten innerhalb Ihres Budgets zu sehen.",
+    minProfit: "Mindestgewinn:",
+    all: "Alle",
+    miners: "Miner",
+    parts: "Teile",
+    racks: "Regale",
+    batteries: "Batterien",
+    other: "Andere",
+    tierRemaining: "verbleibend",
+    watchAdMaintain: "Werbung ansehen, um Tier zu behalten",
+    watchAdUpgrade: "Werbung ansehen, um Tier zu verbessern",
+    qty: "Menge",
+    qtyUnit: "Einheiten",
+    actualBuy: "Tatsächlicher Kauf",
+    targetSell: "Zielverkauf (Netto)",
+    netProfit: "Nettogewinn",
+    buyBtn: "Kaufen",
+    showMore: "Mehr anzeigen",
+    waitingLive: "Warten auf Live-Möglichkeiten...",
+    emptyDesc: "Sobald Arbitrage-Möglichkeiten auf dem Markt erfasst werden, werden sie in diesem Bereich angezeigt.",
+    fanDisclaimer: "Rollercoinmarkt ist ein unabhängiges Fanprojekt. Es ist nicht mit RollerCoin verbunden, von RollerCoin autorisiert oder unterstützt.",
+    createdBy: "Erstellt von",
+    scannedOpportunities: "Gescannte Möglichkeiten",
+    profitOpportunities: "Gewinnmöglichkeiten",
+    accessTiers: "Zugriffs-Tiers",
+    modalSubtitle: "Verbessern Sie Ihr Tier, um erweiterte Filterwerkzeuge und Indikatorfunktionen freizuschalten.",
+    standardPlan: "Standard",
+    advancedPlan: "Fortgeschritten",
+    premiumPlan: "Premium",
+    free: "Kostenlos",
+    watchAd1: "1 Werbung ansehen",
+    watchAd2: "1+1 Werbung ansehen",
+    tier1Feature1: "Einfacher Feed für Gelegenheiten",
+    tier1Feature2: "Standard-Suchfilter",
+    tier1Feature3: "1 aktive Indikatorleiste",
+    tier2Feature1: "RLT-Erschwinglichkeitsfilter",
+    tier2Feature2: "15-Minuten-Timer-Boost",
+    tier2Feature3: "2 aktive Indikatorleisten",
+    tier3Feature1: "Dynamischer, beibehaltbarer Timer",
+    tier3Feature2: "Alle Funktionen freigeschaltet",
+    tier3Feature3: "3 aktive Indikatorleisten",
+    modalDescription: "Standardmäßig starten Sie mit dem Standard-Plan (Tier I). Das Ansehen von 1 Videowerbung schaltet den Fortgeschrittenen-Plan (Tier II) für 15 Minuten frei. Wenn Sie innerhalb dieser 15 Minuten keine weitere Werbung ansehen, wird Ihr Tier um eine Stufe herabgestuft. Das Ansehen einer zweiten Werbung während dieses Zeitraums wertet Sie jedoch auf den Premium-Plan (Tier III) auf. Um Ihren Premium-Status zu behalten, sehen Sie sich einfach innerhalb von 15 Minuten eine weitere Werbung an, um den Countdown zurückzusetzen.",
+    currentTierLabel: "IHR AKTUELLES TIER",
+    lockedLabel: "Gesperrt (Werbung ansehen)",
+    now: "Jetzt",
+    secAgo: "s zuvor",
+    minAgo: "m zuvor",
+    guideAlert: "Die RollerCoin Arbitrage-Anleitung wird bald hinzugefügt!"
+  }
+}
+
+const languages = [
+  { code: 'EN', name: 'English' },
+  { code: 'TR', name: 'Türkçe' },
+  { code: 'ES', name: 'Español' },
+  { code: 'PT', name: 'Português' },
+  { code: 'ID', name: 'Bahasa Indonesia' },
+  { code: 'FR', name: 'Français' },
+  { code: 'DE', name: 'Deutsch' }
+]
+
+const t = (key) => {
+  return translations[currentLanguage.value][key] || key
+}
 
 const currentTier = ref(1)
 const tierTimer = ref(0)
@@ -128,7 +530,7 @@ const toggleVolumeSlider = () => {
 }
 
 const openGuide = () => {
-  alert('RollerCoin Arbitraj Rehberi (Guide) yakında eklenecektir!')
+  alert(t('guideAlert'))
 }
 
 const mouseX = ref(window.innerWidth / 2)
@@ -357,10 +759,10 @@ let clockInterval
 
 const timeAgo = (date) => {
   const seconds = Math.floor((now.value - date) / 1000)
-  if (seconds < 5) return 'Şimdi'
-  if (seconds < 60) return `${seconds} sn önce`
+  if (seconds < 5) return t('now')
+  if (seconds < 60) return `${seconds} ${t('secAgo')}`
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes} dk önce`
+  if (minutes < 60) return `${minutes} ${t('minAgo')}`
   return date.toLocaleTimeString()
 }
 
@@ -474,7 +876,7 @@ onUnmounted(() => {
                 Rollercoinmarkt
               </h1>
               <p class="text-xs text-gray-400 mt-1 md:whitespace-nowrap">
-                RollerCoin marketindeki en kârlı anlık al-sat fırsatlarını otomatik olarak yakalar, hesaplar ve listeler.
+                {{ t('subtitle') }}
               </p>
             </div>
           </div>
@@ -487,14 +889,14 @@ onUnmounted(() => {
               <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <span>GUIDE</span>
+              <span>{{ t('guide') }}</span>
             </button>
 
             <div class="relative flex items-center">
               <button 
                 @click="toggleVolumeSlider"
                 class="cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all group z-30"
-                title="Ses Ayarı"
+                :title="t('soundSettings')"
               >
                 <svg v-if="soundEnabled" class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
@@ -527,7 +929,7 @@ onUnmounted(() => {
               <button 
                 @click="toggleLanguageDropdown"
                 class="cursor-pointer flex items-center gap-2 px-3.5 py-2 h-10 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-sm font-bold text-gray-300 transition-all font-outfit uppercase tracking-wider group z-30"
-                title="Dili Değiştir / Change Language"
+                :title="t('langTitle')"
               >
                 <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -541,20 +943,14 @@ onUnmounted(() => {
                   class="absolute right-0 top-12 bg-black/95 backdrop-blur-md border border-white/10 rounded-lg p-1 flex flex-col gap-1 z-20 shadow-xl min-w-[110px]"
                 >
                   <button 
-                    @click="currentLanguage = 'TR'; showLangDropdown = false"
+                    v-for="lang in languages"
+                    :key="lang.code"
+                    @click="currentLanguage = lang.code; showLangDropdown = false"
                     class="cursor-pointer px-3 py-1.5 rounded text-xs font-semibold hover:bg-white/10 transition-colors text-left flex items-center justify-between w-full"
-                    :class="currentLanguage === 'TR' ? 'text-white bg-white/5' : 'text-gray-400'"
+                    :class="currentLanguage === lang.code ? 'text-white bg-white/5' : 'text-gray-400'"
                   >
-                    <span>Türkçe</span>
-                    <span v-if="currentLanguage === 'TR'" class="text-[10px] text-emerald-400 font-bold">✓</span>
-                  </button>
-                  <button 
-                    @click="currentLanguage = 'EN'; showLangDropdown = false"
-                    class="cursor-pointer px-3 py-1.5 rounded text-xs font-semibold hover:bg-white/10 transition-colors text-left flex items-center justify-between w-full"
-                    :class="currentLanguage === 'EN' ? 'text-white bg-white/5' : 'text-gray-400'"
-                  >
-                    <span>English</span>
-                    <span v-if="currentLanguage === 'EN'" class="text-[10px] text-emerald-400 font-bold">✓</span>
+                    <span>{{ lang.name }}</span>
+                    <span v-if="currentLanguage === lang.code" class="text-[10px] text-emerald-400 font-bold">✓</span>
                   </button>
                 </div>
               </transition>
@@ -572,20 +968,20 @@ onUnmounted(() => {
                   type="number" 
                   min="0"
                   step="0.01"
-                  placeholder="Enter your RLT balance here." 
+                  :placeholder="t('balancePlaceholder')" 
                   class="w-full bg-transparent border-none text-sm text-gray-200 focus:outline-none no-spin"
                 />
                 <div class="relative group/info flex items-center justify-center w-5 h-5 shrink-0 rounded-full border border-white/20 hover:border-white/40 cursor-help transition-colors">
                   <span class="text-[10px] font-bold text-gray-400 group-hover/info:text-white">?</span>
                   <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/95 border border-white/10 rounded-lg text-[10px] text-gray-300 font-medium text-center shadow-xl opacity-0 scale-95 pointer-events-none group-hover/info:opacity-100 group-hover/info:scale-100 transition-all z-50">
-                    Bütçenizin yetmediği yüksek fiyatlı eşyaları gizlemek ve sadece satın alabileceğiniz fırsatları görmek için RLT bakiyenizi girin.
+                    {{ t('balanceTooltip') }}
                     <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black/95"></div>
                   </div>
                 </div>
               </div>
 
               <div class="flex items-center gap-3 w-full md:w-[380px] h-11 bg-black/40 border border-white/15 rounded-lg px-3 focus-within:border-white/40 transition-colors">
-                <span class="text-xs text-gray-400 whitespace-nowrap">Minimum Kâr:</span>
+                <span class="text-xs text-gray-400 whitespace-nowrap">{{ t('minProfit') }}</span>
                 <input 
                   v-model.number="minProfit" 
                   type="number" 
@@ -620,7 +1016,7 @@ onUnmounted(() => {
                     ? 'bg-white text-black border-white shadow-[0_0_12px_rgba(255,255,255,0.2)]' 
                     : 'bg-black/40 text-gray-400 border-white/10 hover:border-white/20 hover:text-white'"
                 >
-                  {{ cat }}
+                  {{ t(cat.toLowerCase()) }}
                 </button>
               </div>
             </div>
@@ -630,7 +1026,7 @@ onUnmounted(() => {
             <div 
               @click="showTierModal = true"
               class="absolute top-0 right-0 w-10 h-10 cursor-pointer group/fold z-30"
-              title="Membership Info / Tier Details"
+              :title="t('accessTiers')"
             >
               <div class="absolute top-0 right-0 w-0 h-0 border-t-[40px] border-t-white/10 border-l-[40px] border-l-transparent transition-all group-hover/fold:border-t-white/20"></div>
               <div class="absolute top-0 right-0 w-0 h-0 border-b-[40px] border-b-transparent border-r-[40px] border-r-black/40 shadow-md"></div>
@@ -648,14 +1044,14 @@ onUnmounted(() => {
             </span>
             
             <span v-if="tierTimer > 0" class="text-xs font-mono mt-1.5 font-bold transition-colors" :class="getTimerTextColor">
-              {{ formatTimer(tierTimer) }} remaining
+              {{ formatTimer(tierTimer) }} {{ t('tierRemaining') }}
             </span>
             
             <button 
               @click="handleWatchAd"
               class="relative mt-4 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-[10px] font-black text-white transition-all uppercase tracking-wider cursor-pointer pr-10 group/up"
             >
-              <span>{{ currentTier === 3 ? 'watch ad to maintain tier' : 'watch ad to upgrade tier' }}</span>
+              <span>{{ currentTier === 3 ? t('watchAdMaintain') : t('watchAdUpgrade') }}</span>
               <div class="absolute -top-2 -right-2 bg-white text-black w-6.5 h-6.5 rounded-full flex items-center justify-center shadow-lg border border-black/20 group-hover/up:scale-110 transition-all" title="Rewarded Video Ad">
                 <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
@@ -703,12 +1099,12 @@ onUnmounted(() => {
               </div>
 
               <div class="col-span-1 md:col-span-2 flex flex-col relative z-10 text-left md:pl-2">
-                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Miktar</span>
-                <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base">{{ opp.quantity }} Adet</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{{ t('qty') }}</span>
+                <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base">{{ opp.quantity }} {{ t('qtyUnit') }}</span>
               </div>
 
               <div class="col-span-1 md:col-span-2 flex flex-col relative z-10 text-left">
-                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Gerçek Alış</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{{ t('actualBuy') }}</span>
                 <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base text-emerald-400 font-semibold flex items-center gap-1.5">
                   {{ formatRLT(opp.actualBuyPriceRlt) }}
                   <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none" alt="RLT" />
@@ -716,7 +1112,7 @@ onUnmounted(() => {
               </div>
 
               <div class="col-span-1 md:col-span-2 flex flex-col relative z-10 text-left">
-                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Hedef Satış (Net)</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{{ t('targetSell') }}</span>
                 <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base text-gray-300 flex items-center gap-1.5">
                   {{ formatRLT(opp.newSellingPrice) }}
                   <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none" alt="RLT" />
@@ -725,7 +1121,7 @@ onUnmounted(() => {
 
               <div class="col-span-1 md:col-span-3 flex items-center justify-between gap-2 relative z-10 w-full border-t md:border-t-0 border-white/5 pt-3 md:pt-0">
                 <div class="text-left">
-                  <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Net Kazanç</span>
+                  <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{{ t('netProfit') }}</span>
                   <div class="text-base md:text-lg font-black font-outfit text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.2)] flex items-center gap-1.5">
                     +{{ formatRLT(opp.netProfitMargin) }}
                     <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none" alt="RLT" />
@@ -735,7 +1131,7 @@ onUnmounted(() => {
                   @click="handleBuyClick(opp)"
                   class="cursor-pointer h-9 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition-all text-black font-black text-xs font-outfit uppercase tracking-wider flex items-center justify-center whitespace-nowrap"
                 >
-                  Satın Al
+                  {{ t('buyBtn') }}
                 </button>
               </div>
             </div>
@@ -750,7 +1146,7 @@ onUnmounted(() => {
                 @click="displayLimit += 6"
                 class="cursor-pointer px-6 py-2.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 hover:scale-105 active:scale-95 transition-all font-outfit uppercase tracking-wider text-xs font-bold text-gray-200 pointer-events-auto shadow-[0_0_20px_rgba(3,2,7,0.8)]"
               >
-                Daha Fazla Göster
+                {{ t('showMore') }}
               </button>
             </div>
           </transition>
@@ -760,8 +1156,8 @@ onUnmounted(() => {
             class="flex flex-col items-center justify-center h-[calc(100%-4px)] border border-dashed border-white/5 rounded-2xl bg-white/[0.01]"
           >
             <span class="text-4xl">📡</span>
-            <h3 class="text-lg font-bold font-outfit text-gray-400 mt-4">Canlı Fırsatlar Bekleniyor...</h3>
-            <p class="text-xs text-gray-500 max-w-xs text-center mt-1">Piyasada arbitraj fırsatları yakalandıkça bu alanda görüntülenecektir.</p>
+            <h3 class="text-lg font-bold font-outfit text-gray-400 mt-4">{{ t('waitingLive') }}</h3>
+            <p class="text-xs text-gray-500 max-w-xs text-center mt-1">{{ t('emptyDesc') }}</p>
           </div>
         </div>
       </div>
@@ -777,10 +1173,10 @@ onUnmounted(() => {
             </span>
             <span class="font-outfit uppercase font-semibold text-gray-400 tracking-widest text-[9px]">&copy; 2026 Rollercoinmarkt.com</span>
             <p class="text-gray-500 text-xs leading-relaxed mt-1">
-              Rollercoinmarkt is an independent fan project. It is not affiliated with, authorized, or endorsed by RollerCoin.
+              {{ t('fanDisclaimer') }}
             </p>
             <div class="flex items-center justify-center sm:justify-start gap-1 text-[11px] text-gray-500 mt-2">
-              <span>Created by</span>
+              <span>{{ t('createdBy') }}</span>
               <span class="creator-name">kryptonn567</span>
             </div>
           </div>
@@ -795,14 +1191,14 @@ onUnmounted(() => {
         <div class="flex justify-center justify-self-center">
           <div class="grid grid-cols-[auto_auto] gap-x-6 gap-y-2.5 shrink-0 select-none items-center">
             <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold text-left">
-              Yakalanan Fırsatlar
+              {{ t('scannedOpportunities') }}
             </span>
             <span class="text-3xl font-black font-mono text-gray-300 text-left">
               {{ totalScanned }}
             </span>
 
             <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold text-left">
-              Kâr Fırsatları
+              {{ t('profitOpportunities') }}
             </span>
             <span class="text-3xl font-black font-mono text-blue-400 text-left flex items-center justify-start gap-1.5">
               {{ formatCumulativeProfit }}
@@ -832,7 +1228,7 @@ onUnmounted(() => {
             <button 
               @click="showTierModal = false"
               class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center border border-white/10 hover:border-white/20 transition-all cursor-pointer z-20"
-              title="Kapat"
+              :title="t('langTitle') === 'Dili Değiştir' ? 'Kapat' : 'Close'"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" stroke="currentColor" d="M6 18L18 6M6 6l12 12" />
@@ -841,10 +1237,10 @@ onUnmounted(() => {
 
             <div class="text-center relative z-10">
               <h2 class="text-xl md:text-2xl font-black font-outfit uppercase tracking-widest text-gray-300">
-                Access Tiers
+                {{ t('accessTiers') }}
               </h2>
               <p class="text-xs text-gray-400 mt-2">
-                Upgrade your tier to unlock advanced filtering tools and indicator features.
+                {{ t('modalSubtitle') }}
               </p>
             </div>
 
@@ -860,16 +1256,16 @@ onUnmounted(() => {
                 </div>
                 <div>
                   <span class="text-xs font-black text-red-500 uppercase tracking-widest">Tier I</span>
-                  <h3 class="text-xl font-black font-outfit text-white mt-1">Standart</h3>
+                  <h3 class="text-xl font-black font-outfit text-white mt-1">{{ t('standardPlan') }}</h3>
                   <div class="border-t border-red-500/10 my-3"></div>
                   <ul class="text-[11px] text-gray-400 space-y-2 text-left">
-                    <li class="flex items-center gap-1.5"><span class="text-red-500">✓</span> Basic opportunity feed</li>
-                    <li class="flex items-center gap-1.5"><span class="text-red-500">✓</span> Standard search filter</li>
-                    <li class="flex items-center gap-1.5"><span class="text-red-500">✓</span> 1 active indicator bar</li>
+                    <li class="flex items-center gap-1.5"><span class="text-red-500">✓</span> {{ t('tier1Feature1') }}</li>
+                    <li class="flex items-center gap-1.5"><span class="text-red-500">✓</span> {{ t('tier1Feature2') }}</li>
+                    <li class="flex items-center gap-1.5"><span class="text-red-500">✓</span> {{ t('tier1Feature3') }}</li>
                   </ul>
                 </div>
                 <div class="mt-6 text-center">
-                  <span class="text-lg font-black text-white font-outfit uppercase">Free</span>
+                  <span class="text-lg font-black text-white font-outfit uppercase">{{ t('free') }}</span>
                 </div>
               </div>
 
@@ -889,16 +1285,16 @@ onUnmounted(() => {
                 </div>
                 <div>
                   <span class="text-xs font-black text-blue-400 uppercase tracking-widest">Tier II</span>
-                  <h3 class="text-xl font-black font-outfit text-white mt-1">Advanced</h3>
+                  <h3 class="text-xl font-black font-outfit text-white mt-1">{{ t('advancedPlan') }}</h3>
                   <div class="border-t border-blue-500/10 my-3"></div>
                   <ul class="text-[11px] text-gray-400 space-y-2 text-left">
-                    <li class="flex items-center gap-1.5"><span class="text-blue-400">✓</span> Affordability RLT filter</li>
-                    <li class="flex items-center gap-1.5"><span class="text-blue-400">✓</span> 15-minute tier timer boost</li>
-                    <li class="flex items-center gap-1.5"><span class="text-blue-400">✓</span> 2 active indicator bars</li>
+                    <li class="flex items-center gap-1.5"><span class="text-blue-400">✓</span> {{ t('tier2Feature1') }}</li>
+                    <li class="flex items-center gap-1.5"><span class="text-blue-400">✓</span> {{ t('tier2Feature2') }}</li>
+                    <li class="flex items-center gap-1.5"><span class="text-blue-400">✓</span> {{ t('tier2Feature3') }}</li>
                   </ul>
                 </div>
                 <div class="mt-6 text-center">
-                  <span class="text-lg font-black text-blue-400 font-outfit uppercase">1 Watch Ad</span>
+                  <span class="text-lg font-black text-blue-400 font-outfit uppercase">{{ t('watchAd1') }}</span>
                 </div>
               </div>
 
@@ -913,22 +1309,22 @@ onUnmounted(() => {
                 </div>
                 <div>
                   <span class="text-xs font-black text-emerald-400 uppercase tracking-widest">Tier III</span>
-                  <h3 class="text-xl font-black font-outfit text-white mt-1">Premium</h3>
+                  <h3 class="text-xl font-black font-outfit text-white mt-1">{{ t('premiumPlan') }}</h3>
                   <div class="border-t border-emerald-500/10 my-3"></div>
                   <ul class="text-[11px] text-gray-400 space-y-2 text-left">
-                    <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> Dynamic maintainable timer</li>
-                    <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> All features unlocked</li>
-                    <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> 3 active indicator bars</li>
+                    <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> {{ t('tier3Feature1') }}</li>
+                    <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> {{ t('tier3Feature2') }}</li>
+                    <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> {{ t('tier3Feature3') }}</li>
                   </ul>
                 </div>
                 <div class="mt-6 text-center">
-                  <span class="text-lg font-black text-emerald-400 font-outfit uppercase">1+1 Watch Ad</span>
+                  <span class="text-lg font-black text-emerald-400 font-outfit uppercase">{{ t('watchAd2') }}</span>
                 </div>
               </div>
             </div>
 
             <p class="text-[11px] text-gray-500 leading-relaxed text-center max-w-3xl mx-auto mt-4 px-4 select-none">
-              By default, you start with the Standard (Tier I) plan. Watching 1 video ad unlocks the Advanced (Tier II) plan for 15 minutes. If you do not watch another ad within these 15 minutes, your tier will be downgraded by one level. However, watching a second ad during this period upgrades you to the Premium (Tier III) plan. To maintain your Premium (Tier III) status, simply watch another ad within 15 minutes to reset the countdown and maximize your access time.
+              {{ t('modalDescription') }}
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 z-10 w-full px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/5 select-none relative">
@@ -937,7 +1333,7 @@ onUnmounted(() => {
                   ✓
                 </div>
                 <span v-else class="px-2.5 py-1 rounded-full bg-white/10 border border-white/30 text-[10px] font-black text-white uppercase tracking-wider">
-                  YOUR CURRENT TIER
+                  {{ t('currentTierLabel') }}
                 </span>
               </div>
 
@@ -946,25 +1342,25 @@ onUnmounted(() => {
                   ✓
                 </div>
                 <span v-else-if="currentTier === 2" class="px-2.5 py-1 rounded-full bg-white/10 border border-white/30 text-[10px] font-black text-white uppercase tracking-wider">
-                  YOUR CURRENT TIER
+                  {{ t('currentTierLabel') }}
                 </span>
                 <span v-else class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
-                  Locked (Watch Ad)
+                  {{ t('lockedLabel') }}
                 </span>
               </div>
 
               <div class="flex justify-center items-center py-1">
                 <span v-if="currentTier === 3" class="px-2.5 py-1 rounded-full bg-white/10 border border-white/30 text-[10px] font-black text-white uppercase tracking-wider">
-                  YOUR CURRENT TIER
+                  {{ t('currentTierLabel') }}
                 </span>
                 <span v-else class="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
-                  Locked (Watch Ad)
+                  {{ t('lockedLabel') }}
                 </span>
               </div>
 
