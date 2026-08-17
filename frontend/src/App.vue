@@ -8,6 +8,7 @@ const socketUrl = computed(() => {
 })
 
 const isConnected = ref(false)
+const userInteracted = ref(false)
 const opportunities = ref([])
 const totalScanned = ref(0)
 const cumulativeProfit = ref(0)
@@ -227,7 +228,7 @@ const setupCanvas = () => {
 }
 
 const playAlertSound = () => {
-  if (!soundEnabled.value) return
+  if (!soundEnabled.value || !userInteracted.value) return
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext
     if (!AudioCtx) return
@@ -268,19 +269,18 @@ const connectWebSocket = () => {
   ws.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data)
-      console.log('📬 WebSocket Verisi Alındı:', data)
       if (data.type === 'history') {
         opportunities.value = data.data.map(item => ({ ...item, time: new Date(item.timestamp) }))
-        totalScanned.value = opportunities.value.length
-        cumulativeProfit.value = opportunities.value.reduce((acc, o) => acc + o.kesinKarMarji, 0)
+        totalScanned.value = data.totalScanned !== undefined ? data.totalScanned : opportunities.value.length
+        cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : opportunities.value.reduce((acc, o) => acc + o.kesinKarMarji, 0)
       } else if (data.type === 'opportunity') {
         const newItem = {
           ...data.data,
           time: new Date(data.data.timestamp)
         }
         opportunities.value.unshift(newItem)
-        totalScanned.value++
-        cumulativeProfit.value += data.data.kesinKarMarji
+        totalScanned.value = data.totalScanned !== undefined ? data.totalScanned : totalScanned.value + 1
+        cumulativeProfit.value = data.cumulativeProfit !== undefined ? data.cumulativeProfit : cumulativeProfit.value + data.data.kesinKarMarji
         playAlertSound()
         
         if (opportunities.value.length > 150) {
@@ -348,11 +348,7 @@ const visibleOpportunities = computed(() => {
 })
 
 const listHeight = computed(() => {
-  const list = filteredOpportunities.value
-  if (list.length > displayLimit.value) {
-    return `${(displayLimit.value + 1) * 136}px`
-  }
-  return 'auto'
+  return `${(displayLimit.value + 1) * 136}px`
 })
 
 const now = ref(new Date())
@@ -397,7 +393,17 @@ const handleBuyClick = (opp) => {
   window.open(url, '_blank')
 }
 
+const handleUserInteraction = () => {
+  userInteracted.value = true
+  window.removeEventListener('click', handleUserInteraction)
+  window.removeEventListener('keydown', handleUserInteraction)
+  window.removeEventListener('touchstart', handleUserInteraction)
+}
+
 onMounted(() => {
+  window.addEventListener('click', handleUserInteraction)
+  window.addEventListener('keydown', handleUserInteraction)
+  window.addEventListener('touchstart', handleUserInteraction)
   window.addEventListener('mousemove', handleMouseMove)
   rAF = requestAnimationFrame(updateBg)
   setupCanvas()
@@ -409,6 +415,9 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  window.removeEventListener('click', handleUserInteraction)
+  window.removeEventListener('keydown', handleUserInteraction)
+  window.removeEventListener('touchstart', handleUserInteraction)
   window.removeEventListener('mousemove', handleMouseMove)
   cancelAnimationFrame(rAF)
   if (handleResize) window.removeEventListener('resize', handleResize)
@@ -655,7 +664,7 @@ onUnmounted(() => {
                 referrerpolicy="no-referrer"
                 class="absolute left-6 top-1/2 -translate-y-1/2 w-40 h-40 opacity-20 group-hover:opacity-35 rotate-[-15deg] group-hover:rotate-[-5deg] group-hover:scale-110 transition-all duration-500 pointer-events-none select-none z-0 object-contain" 
                 alt=""
-                @error="(e) => { console.warn('Görsel yüklenemedi:', e.target.src); e.target.style.display = 'none'; }"
+                @error="(e) => { e.target.style.display = 'none'; }"
               />
               
               <div class="col-span-1 md:col-span-3 flex flex-col gap-2 relative z-10 text-left">
@@ -725,7 +734,7 @@ onUnmounted(() => {
 
           <div 
             v-if="filteredOpportunities.length === 0" 
-            class="flex flex-col items-center justify-center py-20 border border-dashed border-white/5 rounded-2xl bg-white/[0.01]"
+            class="flex flex-col items-center justify-center h-[calc(100%-4px)] border border-dashed border-white/5 rounded-2xl bg-white/[0.01]"
           >
             <span class="text-4xl">📡</span>
             <h3 class="text-lg font-bold font-outfit text-gray-400 mt-4">Canlı Fırsatlar Bekleniyor...</h3>
@@ -735,16 +744,16 @@ onUnmounted(() => {
       </div>
     </main>
 
-    <footer class="w-full bg-[#050409] border-t border-white/5 py-10 px-8 relative z-10">
-      <div class="w-full flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
-        <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+    <footer class="w-full bg-[#050409] border-t border-white/5 py-20 px-8 relative z-10">
+      <div class="w-full grid grid-cols-1 md:grid-cols-3 items-center gap-8 max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left justify-self-center">
           <img :src="faviconImg" class="w-20 h-20 object-contain shrink-0 select-none pointer-events-none" alt="Logo" />
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col gap-1 max-w-md">
             <span class="text-lg md:text-xl font-black font-outfit uppercase tracking-widest text-white select-none">
               ROLLERCOINMARKT
             </span>
             <span class="font-outfit uppercase font-semibold text-gray-400 tracking-widest text-[9px]">&copy; 2026 Rollercoinmarkt.com</span>
-            <p class="text-gray-500 text-xs max-w-xl leading-relaxed mt-1">
+            <p class="text-gray-500 text-xs leading-relaxed mt-1">
               Rollercoinmarkt is an independent fan project. It is not affiliated with, authorized, or endorsed by RollerCoin.
             </p>
             <div class="flex items-center justify-center sm:justify-start gap-1 text-[11px] text-gray-500 mt-2">
@@ -754,21 +763,29 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div class="grid grid-cols-[auto_auto] gap-x-6 gap-y-2.5 shrink-0 select-none items-center">
-          <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold text-left">
-            Yakalanan Fırsatlar
-          </span>
-          <span class="text-base font-black font-mono text-gray-300 min-w-[70px] text-right">
-            +{{ totalScanned }}
-          </span>
+        <div class="flex justify-center justify-self-center">
+          <a href="https://rollercoin.com/?r=kxsl6ix5" target="_blank" rel="noopener" class="block hover:opacity-90 transition-opacity max-w-full overflow-hidden">
+            <img src="https://static.rollercoin.com/static/img/ref/gen3/w320h100.gif" alt="320h100" class="rounded-lg border border-white/5 shadow-md max-w-full h-auto object-contain" />
+          </a>
+        </div>
 
-          <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold text-left">
-            Kâr Fırsatları
-          </span>
-          <span class="text-base font-black font-mono text-blue-400 min-w-[70px] text-right flex items-center justify-end gap-1.5">
-            {{ formatCumulativeProfit }}
-            <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4 h-4 select-none pointer-events-none brightness-110" alt="RLT" />
-          </span>
+        <div class="flex justify-center justify-self-center">
+          <div class="grid grid-cols-[auto_auto] gap-x-6 gap-y-2.5 shrink-0 select-none items-center">
+            <span class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold text-left">
+              Yakalanan Fırsatlar
+            </span>
+            <span class="text-3xl font-black font-mono text-gray-300 text-left">
+              {{ totalScanned }}
+            </span>
+
+            <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold text-left">
+              Kâr Fırsatları
+            </span>
+            <span class="text-3xl font-black font-mono text-blue-400 text-left flex items-center justify-start gap-1.5">
+              {{ formatCumulativeProfit }}
+              <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none brightness-110" alt="RLT" />
+            </span>
+          </div>
         </div>
       </div>
     </footer>

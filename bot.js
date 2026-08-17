@@ -46,6 +46,8 @@ try {
 const app = express();
 const server = http.createServer(app);
 const localWss = new WebSocket.Server({ server });
+let totalScannedCount = 0;
+let cumulativeProfitSum = 0;
 const opportunitiesHistory = [];
 const frontendDistPath = path.join(__dirname, 'frontend', 'dist');
 
@@ -59,7 +61,9 @@ localWss.on('connection', (ws) => {
     ws.send(
         JSON.stringify({
             type: 'history',
-            data: opportunitiesHistory
+            data: opportunitiesHistory,
+            totalScanned: totalScannedCount,
+            cumulativeProfit: cumulativeProfitSum
         })
     );
 });
@@ -179,6 +183,8 @@ async function connect() {
                         const kesinKarMarji = (yeniSatisFiyati - gercekAlisFiyatiRlt) * miktar;
 
                         if (kesinKarMarji > 0) {
+                            totalScannedCount++;
+                            cumulativeProfitSum += kesinKarMarji;
                             const opportunity = {
                                 itemId: itemData.item_id,
                                 itemName: itemNamesMap[itemData.item_id] || itemData.item_id,
@@ -206,7 +212,9 @@ async function connect() {
 
                             broadcastToClients({
                                 type: 'opportunity',
-                                data: opportunity
+                                data: opportunity,
+                                totalScanned: totalScannedCount,
+                                cumulativeProfit: cumulativeProfitSum
                             });
                         }
                     }
