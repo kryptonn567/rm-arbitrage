@@ -31,14 +31,23 @@ const activeSinceText = computed(() => {
   return `${prefix} ${dateStr}`
 })
 
+const formatNumberWithDots = (val) => {
+  if (val === undefined || val === null) return '0'
+  const num = Math.floor(Number(val))
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
 const formatCumulativeProfit = computed(() => {
   const val = cumulativeProfit.value
   if (val >= 100) {
-    return '+' + Math.floor(val / 100) * 100
+    const num = Math.floor(val / 100) * 100
+    return '+' + formatNumberWithDots(num)
   } else if (val >= 10) {
-    return '+' + Math.floor(val / 10) * 10
+    const num = Math.floor(val / 10) * 10
+    return '+' + formatNumberWithDots(num)
   } else if (val >= 1) {
-    return '+' + Math.floor(val)
+    const num = Math.floor(val)
+    return '+' + formatNumberWithDots(num)
   }
   return '+0'
 })
@@ -905,7 +914,7 @@ onUnmounted(() => {
           <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
             <button 
               @click="openGuide"
-              class="cursor-pointer flex items-center gap-2 px-4 py-2 h-10 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-sm font-bold text-gray-200 transition-all font-outfit uppercase tracking-[0.12em] group"
+              class="cursor-pointer flex items-center gap-2 px-4 py-2 h-10 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 hover:border-white/30 text-sm font-bold text-white transition-all font-outfit uppercase tracking-[0.12em] group"
             >
               <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -1189,7 +1198,7 @@ onUnmounted(() => {
               {{ t('scannedOpportunities') }}
             </span>
             <span class="text-3xl font-black font-mono text-gray-300 text-left">
-              {{ totalScanned }}
+              {{ formatNumberWithDots(totalScanned) }}
             </span>
 
             <span class="text-[10px] text-blue-400 uppercase tracking-widest font-semibold text-left">
