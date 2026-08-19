@@ -141,7 +141,7 @@ const translations = {
     soundSettings: "Ses Ayarları",
     langTitle: "Dili Değiştir",
     balancePlaceholder: "RLT bakiyenizi girin.",
-    balanceTooltip: "Bütçenizin yetmediği yüksek fiyatlı eşyaları gizlemek ve sadece satın alabileceğiniz fırsatları görmek için RLT bakiyenizi girin.",
+    balanceTooltip: "Mevcut RLT bakiyen hakkında bilgi sahibi olmamız sayesinde sana satın alabileceğin fırsatları filtrelemiş olacağız.",
     minProfit: "Minimum Kâr:",
     all: "Tümü",
     miners: "Madenciler",
@@ -1020,9 +1020,9 @@ onUnmounted(() => {
                 />
                 <div class="relative group/info flex items-center justify-center w-5 h-5 shrink-0 rounded-full border border-white/20 hover:border-white/40 cursor-help transition-colors">
                   <span class="text-[10px] font-bold text-gray-400 group-hover/info:text-white">?</span>
-                  <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-black/95 border border-white/10 rounded-lg text-[10px] text-gray-300 font-medium text-center shadow-xl opacity-0 scale-95 pointer-events-none group-hover/info:opacity-100 group-hover/info:scale-100 transition-all z-50">
+                  <div class="absolute top-full right-[-8px] md:left-1/2 md:right-auto md:-translate-x-1/2 mt-2 w-64 p-2 bg-black/95 border border-white/10 rounded-lg text-[10px] text-gray-300 font-medium text-center shadow-xl opacity-0 scale-95 pointer-events-none group-hover/info:opacity-100 group-hover/info:scale-100 transition-all z-50">
                     {{ t('balanceTooltip') }}
-                    <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black/95"></div>
+                    <div class="absolute bottom-full right-[14px] md:left-1/2 md:right-auto md:-translate-x-1/2 border-4 border-transparent border-b-black/95"></div>
                   </div>
                 </div>
               </div>
@@ -1123,8 +1123,16 @@ onUnmounted(() => {
 
               <div class="col-span-1 md:col-span-2 flex flex-col relative z-10 text-left">
                 <span class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">{{ t('actualBuy') }}</span>
-                <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base text-emerald-400 font-semibold flex items-center gap-1.5">
-                  {{ formatRLT(opp.actualBuyPriceRlt) }}
+                <span class="font-bold text-white font-mono mt-0.5 text-sm md:text-base text-emerald-400 font-semibold flex items-center gap-1.5 flex-wrap">
+                  <template v-if="opp.quantity > 1">
+                    <span class="flex items-center gap-1">
+                      <span>{{ formatRLT(opp.actualBuyPriceRlt * opp.quantity) }}</span>
+                      <span class="text-[11.5px] text-gray-400 font-normal flex items-center justify-center select-none">({{ formatRLT(opp.actualBuyPriceRlt) }})</span>
+                    </span>
+                  </template>
+                  <template v-else>
+                    {{ formatRLT(opp.actualBuyPriceRlt) }}
+                  </template>
                   <img src="https://static.rollercoin.com/static/img/icons/currencies/rlt.svg" class="w-4.5 h-4.5 select-none pointer-events-none" alt="RLT" />
                 </span>
               </div>
