@@ -820,7 +820,11 @@ const getItemImageUrl = (opp) => {
       .trim()
       .replace(/\s+/g, '_')
       .replace(/[^a-z0-9_]/g, '')
-    return `https://static.rollercoin.com/static/img/market/utility_items/${nameKey}.gif`
+    return `https://static.rollercoin.com/static/img/market/utility_items/${nameKey}.png`
+  }
+
+  if (typeLower === 'battery' || typeLower === 'batteries') {
+    return `https://static.rollercoin.com/static/img/market/batteries/${opp.itemId}.png`
   }
 
   const isMiner = typeLower.startsWith('miner')
