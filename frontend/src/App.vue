@@ -900,8 +900,21 @@ onUnmounted(() => {
 
     <div class="grid-overlay"></div>
 
-    <main class="flex-1 flex flex-col items-center justify-start p-4 md:p-8 relative z-10 w-full max-w-7xl mx-auto mt-6">
-      <div class="w-full flex flex-col gap-6">
+    <div class="w-full max-w-[1648px] mx-auto grid grid-cols-1 2xl:grid-cols-[160px_1fr_160px] items-start gap-6 relative z-10">
+      <!-- Left Ad Sidebar -->
+      <div class="hidden 2xl:flex flex-col items-start justify-start pt-6 px-2 w-full">
+        <!-- BEGIN AADS AD UNIT 2452715 -->
+        <div id="ad-left-frame" style="width: 160px;margin: auto;z-index: 99998;height: auto">
+            <iframe data-aa='2452715'
+                src='//ad.a-ads.com/2452715/?size=160x600'
+                style='border:0; padding:0; width:160px; height:600px; overflow:hidden;display: block;margin: auto'>
+            </iframe>
+        </div>
+        <!-- END AADS AD UNIT 2452715 -->
+      </div>
+
+      <main class="flex-1 flex flex-col items-center justify-start p-4 md:p-8 w-full max-w-7xl mx-auto mt-6">
+        <div class="w-full flex flex-col gap-6">
         <header class="flex flex-col md:flex-row items-center justify-between gap-4 w-full border-b border-white/5 pb-6">
           <div class="flex items-center gap-4">
             <img :src="faviconImg" class="logo-img w-12 h-12 md:w-16 md:h-16" alt="Logo" />
@@ -1167,6 +1180,19 @@ onUnmounted(() => {
         </div>
       </div>
     </main>
+
+      <!-- Right Ad Sidebar -->
+      <div class="hidden 2xl:flex flex-col items-start justify-start pt-6 px-2 w-full">
+        <!-- BEGIN AADS AD UNIT 2452716 -->
+        <div id="ad-right-frame" style="width: 160px;margin: auto;z-index: 99998;height: auto">
+            <iframe data-aa='2452716'
+                src='//ad.a-ads.com/2452716/?size=160x600'
+                style='border:0; padding:0; width:160px; height:600px; overflow:hidden;display: block;margin: auto'>
+            </iframe>
+        </div>
+        <!-- END AADS AD UNIT 2452716 -->
+      </div>
+    </div>
 
     <footer class="w-full bg-[#050409] border-t border-white/5 py-20 px-8 relative z-10">
       <div class="w-full grid grid-cols-1 md:grid-cols-3 items-center gap-8 max-w-7xl mx-auto">
