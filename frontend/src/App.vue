@@ -73,9 +73,17 @@ const minProfitIndex = computed({
 })
 const selectedCategory = ref('All')
 const rltBalance = ref('')
-const volumeLevel = ref(0.3)
+const volumeLevel = ref(0)
 const soundEnabled = computed(() => volumeLevel.value > 0)
 const showVolumeSlider = ref(false)
+
+const toggleMute = () => {
+  if (volumeLevel.value > 0) {
+    volumeLevel.value = 0
+  } else {
+    volumeLevel.value = 0.4
+  }
+}
 const showLangDropdown = ref(false)
 const currentLanguage = ref('EN')
 
@@ -939,13 +947,13 @@ onUnmounted(() => {
               <span>{{ t('guide') }}</span>
             </button>
 
-            <div class="relative flex items-center">
+            <div class="relative flex items-center group/volume">
               <button 
-                @click="toggleVolumeSlider"
+                @click="toggleMute"
                 class="cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all group z-30"
                 :title="t('soundSettings')"
               >
-                <svg v-if="soundEnabled" class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg v-if="soundEnabled" class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 </svg>
                 <svg v-else class="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -954,22 +962,32 @@ onUnmounted(() => {
                 </svg>
               </button>
               
-              <transition name="fade">
-                <div 
-                  v-if="showVolumeSlider"
-                  class="absolute left-1/2 -translate-x-1/2 top-12 bg-black/90 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 flex items-center gap-2 z-20 shadow-xl"
-                >
+              <div 
+                class="absolute left-1/2 -translate-x-1/2 top-10 pt-2.5 opacity-0 pointer-events-none group-hover/volume:opacity-100 group-hover/volume:pointer-events-auto transition-all duration-200 z-20 transform translate-y-1 group-hover/volume:translate-y-0"
+              >
+                <div class="bg-black/95 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3 shadow-2xl min-w-[210px]">
+                  <!-- Sound wave visualizer icon -->
+                  <div class="flex items-end gap-[2.5px] h-4.5 w-6 shrink-0 justify-center">
+                    <div class="w-[3px] bg-emerald-400 rounded-full transition-all duration-150" :style="{ height: volumeLevel > 0 ? '40%' : '20%', opacity: volumeLevel > 0 ? 1 : 0.3 }"></div>
+                    <div class="w-[3px] bg-emerald-400 rounded-full transition-all duration-150" :style="{ height: volumeLevel >= 0.25 ? '70%' : '20%', opacity: volumeLevel >= 0.25 ? 1 : 0.3 }"></div>
+                    <div class="w-[3px] bg-emerald-400 rounded-full transition-all duration-150" :style="{ height: volumeLevel >= 0.5 ? '100%' : '20%', opacity: volumeLevel >= 0.5 ? 1 : 0.3 }"></div>
+                    <div class="w-[3px] bg-emerald-400 rounded-full transition-all duration-150" :style="{ height: volumeLevel >= 0.75 ? '80%' : '20%', opacity: volumeLevel >= 0.75 ? 1 : 0.3 }"></div>
+                  </div>
+                  
                   <input 
                     v-model.number="volumeLevel" 
                     type="range" 
                     min="0" 
                     max="1" 
-                    step="0.05" 
-                    class="w-20 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-white" 
+                    step="0.01" 
+                    class="w-24 h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 hover:accent-emerald-300 transition-colors" 
                   />
-                  <span class="text-[10px] font-mono text-gray-300 w-6 text-right">{{ Math.round(volumeLevel * 100) }}%</span>
+                  
+                  <span class="text-xs font-mono text-gray-300 w-8 text-right select-none">
+                    {{ Math.round(volumeLevel * 100) }}%
+                  </span>
                 </div>
-              </transition>
+              </div>
             </div>
 
             <div class="relative flex items-center">
