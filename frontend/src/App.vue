@@ -7,6 +7,7 @@ import guideStep3Img from './assets/guide_step3.png'
 import guideStep4Img from './assets/guide_step4.png'
 import guideBeforeImg from './assets/guide_before.png'
 import guideAfterImg from './assets/guide_after.png'
+import PrivacyPolicyModal from './components/PrivacyPolicyModal.vue'
 
 const socketUrl = computed(() => {
   const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
@@ -616,6 +617,7 @@ const tierTimer = ref(0)
 let tierInterval = null
 const showTierModal = ref(false)
 const showGuideModal = ref(false)
+const showPrivacyModal = ref(false)
 const guidePage = ref(1)
 
 const startTierTimer = () => {
@@ -1358,9 +1360,18 @@ onUnmounted(() => {
             <p class="text-gray-500 text-xs leading-relaxed mt-1">
               {{ t('fanDisclaimer') }}
             </p>
-            <div class="flex items-center justify-center sm:justify-start gap-1 text-[11px] text-gray-500 mt-2">
-              <span>{{ t('createdBy') }}</span>
-              <span class="creator-name">kryptonn567</span>
+            <div class="flex items-center justify-center sm:justify-start gap-3 text-[11px] text-gray-500 mt-2">
+              <div class="flex items-center gap-1">
+                <span>{{ t('createdBy') }}</span>
+                <span class="creator-name">kryptonn567</span>
+              </div>
+              <span class="text-gray-700">|</span>
+              <button 
+                @click="showPrivacyModal = true" 
+                class="hover:text-white transition-colors cursor-pointer underline decoration-dotted underline-offset-2"
+              >
+                Privacy Policy
+              </button>
             </div>
           </div>
         </div>
@@ -1828,6 +1839,9 @@ onUnmounted(() => {
         </div>
       </div>
     </transition>
+    
+    <!-- Privacy Policy Modal -->
+    <PrivacyPolicyModal :show="showPrivacyModal" @close="showPrivacyModal = false" />
 
   </div>
 </template>
