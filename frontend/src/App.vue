@@ -849,7 +849,35 @@ const connectWebSocket = () => {
         if (data.activeSince && !activeSince.value) {
           activeSince.value = new Date(data.activeSince)
         }
-        playAlertSound()
+        
+        // Sadece kullanıcının filtrelerine uyan ürünler için bildirim sesi çal
+        const matchesProfit = newItem.netProfitMargin >= minProfit.value
+        
+        let matchesCategory = true
+        const typeLower = String(newItem.itemType || '').toLowerCase()
+        if (selectedCategory.value === 'Miners') {
+          matchesCategory = typeLower.startsWith('miner')
+        } else if (selectedCategory.value === 'Parts') {
+          matchesCategory = typeLower.startsWith('part') || typeLower === 'mutation_component'
+        } else if (selectedCategory.value === 'Racks') {
+          matchesCategory = typeLower.startsWith('rack')
+        } else if (selectedCategory.value === 'Batteries') {
+          matchesCategory = typeLower.startsWith('battery')
+        } else if (selectedCategory.value === 'Other') {
+          matchesCategory = !typeLower.startsWith('miner') && 
+                            !typeLower.startsWith('part') && 
+                            typeLower !== 'mutation_component' &&
+                            !typeLower.startsWith('rack') && 
+                            !typeLower.startsWith('battery')
+        }
+        
+        const matchesBalance = rltBalance.value !== '' && rltBalance.value !== null
+          ? newItem.actualBuyPriceRlt <= parseFloat(rltBalance.value)
+          : true
+          
+        if (matchesProfit && matchesCategory && matchesBalance) {
+          playAlertSound()
+        }
         
         if (opportunities.value.length > 150) {
           opportunities.value.pop()
