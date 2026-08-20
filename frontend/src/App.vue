@@ -1,6 +1,12 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import faviconImg from './assets/favicon.ico'
+import guideStep1Img from './assets/guide_step1.png'
+import guideStep2Img from './assets/guide_step2.png'
+import guideStep3Img from './assets/guide_step3.png'
+import guideStep4Img from './assets/guide_step4.png'
+import guideBeforeImg from './assets/guide_before.png'
+import guideAfterImg from './assets/guide_after.png'
 
 const socketUrl = computed(() => {
   const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
@@ -141,7 +147,25 @@ const translations = {
     now: "Now",
     secAgo: "s ago",
     minAgo: "m ago",
-    guideAlert: "RollerCoin Arbitrage Guide will be added soon!"
+    guideAlert: "RollerCoin Arbitrage Guide will be added soon!",
+    guideTitle: "RollerCoin Arbitrage Guide",
+    guideStep0Title: "Welcome to Rollercoinmarkt!",
+    guideStep0Desc: "This guide is designed to help you turn instant price imbalances in the RollerCoin market into profit.\n\nOur system continuously analyzes the two cheapest listings in the market to capture quick and profitable buy-sell (arbitrage) opportunities. The main goal is to buy an underpriced item instantly and resell it using our automatically calculated target price to make a quick profit as the cheapest listing.",
+    guideStep1Title: "Step 1 - Filter & List Opportunities",
+    guideStep1Desc: "Enter your current RLT balance to view the full list of products you can purchase, and use other filtering options.",
+    guideStep2Title: "Step 2 - Reading Listed Opportunities",
+    guideStep2Desc: "The best market opportunities are instantly listed here based on your filters:\n\n• QTY: The quantity available at the cheapest price.\n• Actual Buy: The net RLT required to buy the product.\n• Target Sell: The recommended resale price (market fee included) to ensure your listing is the cheapest. Automatically copied to your clipboard.\n• Net Profit: Your net earnings after deducting the market fee.\n• Buy Button: Opens the RollerCoin page and copies the Target Sell price to your clipboard.",
+    guideStep3Title: "Step 3 - Arbitrage Logic",
+    guideStep3Desc: "When an arbitrage opportunity is captured, the price list on RollerCoin looks like the image.\n\nThe algorithm compares the two cheapest listings. If buying the cheapest item and reselling it (with fees included) allows listing it below the second cheapest option while still yielding profit, it is flagged as an opportunity.",
+    guideStep4Title: "Step 4 - Sale & Profit Calculation",
+    guideStep4Desc: "To resell the item we purchased for 0.252 RLT (Actual Buy), we paste the copied Target Sell price (0.295238 - blue box) into the price input field.\n\nThe price the buyer will pay (Expected pay - red box) appears as 0.31 RLT due to the 5% market fee. The net amount you will receive after the fee deduction is exactly the 0.295238 RLT (Target Sell) you entered. This places your listing at the top, just below the nearest competitor (0.32 RLT).\n\nYour net profit is calculated by subtracting Actual Buy (0.252 RLT) from the net Target Sell (0.295238 RLT) paid to you.",
+    beforeLabel: "Before Transaction",
+    afterLabel: "After Transaction",
+    formulaTitle: "Profit Calculation Formula:",
+    marketFeeLabel: "Market Fee",
+    actualBuyLabel: "Actual Buy",
+    guideStep5Title: "Important Tips & Recommendations",
+    guideStep5Desc: "• Burning Event Items: Some items may list at abnormal prices due to market distortions. These items used in burning events might not yield high profits; trading them is entirely at your discretion.\n\n• Target Sell Flexibility: The algorithm always copies the target price just one step below the cheapest current listing. Reselling below or above this target price is up to you.\n\n• Resale Strategy: Reselling above the Target Sell price may increase gains but often slows down the sale. Reselling slightly below the Target Sell price is favored by the algorithm, allowing for a quicker sale and making the item eligible to be caught as an opportunity again."
   },
   TR: {
     subtitle: "RollerCoin marketindeki en kârlı anlık al-sat fırsatlarını otomatik olarak yakalar, hesaplar ve listeler.",
@@ -196,7 +220,25 @@ const translations = {
     now: "Şimdi",
     secAgo: "sn önce",
     minAgo: "dk önce",
-    guideAlert: "RollerCoin Arbitraj Rehberi yakında eklenecektir!"
+    guideAlert: "RollerCoin Arbitraj Rehberi yakında eklenecektir!",
+    guideTitle: "RollerCoin Arbitraj Rehberi",
+    guideStep0Title: "Rollercoinmarkt'a Hoş Geldiniz!",
+    guideStep0Desc: "Bu rehber, RollerCoin pazarındaki anlık fiyat dengesizliklerini kazanca dönüştürmenize yardımcı olmak için tasarlanmıştır.\n\nSistemimiz, marketteki en ucuz iki satış ilanını sürekli analiz ederek hızlı ve karlı al-sat (arbitraj) fırsatlarını yakalar. Temel amaç, ucuza listelenen bir ürünü anında satın alıp, otomatik hesaplanan hedef fiyatla pazarın en ucuz ilanı olacak şekilde yeniden satışa sunarak hızlıca kar elde etmenizdir.",
+    guideStep1Title: "Adım 1 - Fırsatları Listeleyin ve Filtreleyin",
+    guideStep1Desc: "Mevcut RLT bakiyenizi girerek satın alabileceğiniz ürünlerin tam listesini görün ve diğer filtreleme seçeneklerini kullanın.",
+    guideStep2Title: "Adım 2 - Listelenen Fırsatların Okunması",
+    guideStep2Desc: "Pazardaki en uygun fırsatlar filtrenize göre anlık olarak bu alanda listelenir:\n\n• QTY: En ucuz fiyattan ilanda olan ürün adeti.\n• Actual Buy: Ürünü almak için harcamanız gereken net RLT miktarı.\n• Target Sell: Hızlı satış için komisyonlar dahil hesaplanan hedef fiyattır. Panonuza otomatik kopyalanır; bu fiyatla satış yaptığınızda pazarın en ucuz ilanı sizinki olur.\n• Net Profit: Komisyonlar düşüldükten sonra elde edeceğiniz net karınız.\n• Buy Butonu: RollerCoin satın alma sayfasını açarken, Target Sell fiyatını panonuza otomatik kopyalar.",
+    guideStep3Title: "Adım 3 - Arbitraj Fırsatının Mantığı",
+    guideStep3Desc: "Bir fırsat ürünü yakalandığında RollerCoin üzerindeki fiyat tablosu görseldeki gibi görünür.\n\nAlgoritma, en ucuz iki satış ilanını karşılaştırır. En ucuz ilandaki ürün satın alınıp komisyonlar eklenerek yeniden listelendiğinde, hala ikinci en ucuz ilandan daha düşük fiyata satılabiliyor ve kar bırakıyorsa, sistem bunu anında fırsat olarak işaretler.",
+    guideStep4Title: "Adım 4 - Satış ve Kar Hesaplama",
+    guideStep4Desc: "Önceki adımda 0.252 RLT'ye (Actual Buy) satın aldığımız ürünü yeniden satmak için, panomuza kopyalanan Target Sell değerini (0.295238 - mavi kutu) fiyat giriş alanına yapıştırıyoruz.\n\nAlıcının ödeyeceği tutar (Expected pay - kırmızı kutu) %5 market komisyonuyla birlikte 0.31 RLT olarak görünür. Bu durumda komisyon düşüldükten sonra size net olarak ödenecek tutar, girdiğiniz 0.295238 RLT (Target Sell) olacaktır. Böylece ürününüz, en yakın rakibin (0.32 RLT) hemen altında yer alarak pazarın en ucuz ilanı olur.\n\nElde edeceğiniz net kar: Size net ödenecek olan Target Sell (0.295238 RLT) değerinden, Actual Buy (0.252 RLT) çıkarılarak hesaplanır.",
+    beforeLabel: "İşlem Öncesi",
+    afterLabel: "İşlem Sonrası",
+    formulaTitle: "Kar Hesaplama Formülü:",
+    marketFeeLabel: "Market Komisyonu",
+    actualBuyLabel: "Gerçek Alış",
+    guideStep5Title: "Önemli İpuçları & Tavsiyeler",
+    guideStep5Desc: "• Burning Event Ürünleri: Bazı ürünlerin piyasa fiyatlarında aşırı bozulmalar oluşabilir. Burning (yakma) etkinliklerinde kullanılan bu tarz ürünler yüksek kar potansiyeli taşımayabilir, alım-satım kararı tamamen sizin inisiyatifinizdedir.\n\n• Target Sell Esnekliği: Algoritma size her zaman en ucuz ilanın bir kademe altındaki hedef satış fiyatını kopyalar. Satış yaparken bu fiyatın altına inmek veya üstüne çıkmak sizin tercihinizdir.\n\n• Fiyat Stratejisi: Target Sell fiyatının üzerinde satış yapmak bazen daha yüksek kazanç getirse de satış sürecini ciddi oranda uzatabilir. Target Sell fiyatının biraz daha altına listelemek ise ürünün çok daha hızlı satılmasını ve algoritma tarafından tekrar fırsat olarak yakalanmasını kolaylaştırır."
   },
   ES: {
     subtitle: "Escanea, calcula y lista automáticamente las oportunidades de arbitraje instantáneo más rentables en el mercado de RollerCoin.",
@@ -251,7 +293,23 @@ const translations = {
     now: "Ahora",
     secAgo: "s antes",
     minAgo: "m antes",
-    guideAlert: "¡La Guía de Arbitraje de RollerCoin se agregará pronto!"
+    guideAlert: "¡La Guía de Arbitraje de RollerCoin se agregará pronto!",
+    guideTitle: "Guía de Arbitraje de RollerCoin",
+    guideStep0Title: "¡Bienvenido a Rollercoinmarkt!",
+    guideStep0Desc: "Esta guía está diseñada para ayudarte a convertir los desequilibrios de precios instantáneos en el mercado de RollerCoin en ganancias.\n\nNuestro sistema analiza continuamente las dos ofertas más baratas del mercado para capturar oportunidades rápidas y rentables de compra y venta (arbitraje). El objetivo principal es comprar un artículo con descuento al instante y revenderlo utilizando nuestro precio objetivo calculado automáticamente para obtener una ganancia rápida como la oferta más barata.",
+    guideStep1Title: "Paso 1 - Filtrar y Listar Oportunidades",
+    guideStep1Desc: "Introduce tu saldo actual de RLT para ver la lista completa de productos que puedes comprar y utiliza otras opciones de filtrado.",
+    guideStep2Title: "Paso 2 - Lectura de Oportunidades Listadas",
+    guideStep2Desc: "Las mejores oportunidades del mercado se listan aquí instantáneamente según tus filtros:\n\n• QTY: La cantidad disponible al precio más barato.\n• Actual Buy: El RLT neto requerido para comprar el producto.\n• Target Sell: El precio de reventa recomendado (comisión de mercado incluida) para asegurar que tu oferta sea la más barata. Copiado automáticamente a tu portapapeles.\n• Net Profit: Tus ganancias netas después de deducir la comisión del mercado.\n• Buy (Comprar): Abre la página de RollerCoin y copia el precio de Target Sell a tu portapapeles.",
+    guideStep3Title: "Paso 3 - Lógica de Arbitraje",
+    guideStep3Desc: "Cuando se captura una oportunidad de arbitraje, la lista de precios en RollerCoin se ve como la imagen.\n\nEl algoritmo compara las dos ofertas más baratas. Si comprar el artículo más barato y revenderlo (con comisiones incluidas) permite listarlo por debajo de la segunda opción más barata y aun así obtener ganancias, se marca como una oportunidad.",
+    guideStep4Title: "Paso 4 - Venta y Cálculo de Ganancias",
+    guideStep4Desc: "Para revender el artículo que compramos por 0.252 RLT (Actual Buy), pegamos el precio de Target Sell copiado (0.295238 - recuadro azul) en el campo de entrada de precios.\n\nCon una comisión de mercado del 5%, este precio da como resultado un pago esperado de 0.31 RLT (Expected pay - recuadro rojo). Esto coloca tu oferta al principio como la más barata, justo por debajo del competidor más cercano (0.32 RLT).\n\nTu ganancia neta se calcula restando el Actual Buy (0.252 RLT) del Expected Pay (0.31 RLT) que se te pagará.",
+    beforeLabel: "Antes de la Transacción",
+    afterLabel: "Después de la Transacción",
+    formulaTitle: "Fórmula de Cálculo de Ganancias:",
+    marketFeeLabel: "Comisión de Mercado",
+    actualBuyLabel: "Compra Real"
   },
   PT: {
     subtitle: "Varre, calcula e lista automaticamente as oportunidades de arbitragem instantânea mais lucrativas no mercado de RollerCoin.",
@@ -306,7 +364,23 @@ const translations = {
     now: "Agora",
     secAgo: "s atrás",
     minAgo: "m atrás",
-    guideAlert: "O Guia de Arbitragem do RollerCoin será adicionado em breve!"
+    guideAlert: "O Guia de Arbitragem do RollerCoin será adicionado em breve!",
+    guideTitle: "Guia de Arbitragem do RollerCoin",
+    guideStep0Title: "Bem-vindo ao Rollercoinmarkt!",
+    guideStep0Desc: "Este guia foi projetado para ajudá-lo a transformar desequilíbrios de preços instantâneos no mercado RollerCoin em lucro.\n\nNosso sistema analisa continuamente as duas ofertas mais baratas do mercado para capturar oportunidades rápidas e lucrativas de compra e venda (arbitragem). O principal objetivo é comprar um item com desconto instantaneamente e revendê-lo usando nosso preço-alvo calculado automaticamente para obter um lucro rápido como a oferta mais barata.",
+    guideStep1Title: "Passo 1 - Filtrar e Listar Oportunidades",
+    guideStep1Desc: "Insira seu saldo de RLT atual para ver a lista completa de produtos que você pode comprar e use outras opções de filtragem.",
+    guideStep2Title: "Passo 2 - Leitura de Oportunidades Listadas",
+    guideStep2Desc: "As melhores oportunidades do mercado são listadas aqui instantaneamente com base em seus filtros:\n\n• QTY: A quantidade disponível ao preço mais barato.\n• Actual Buy: O RLT líquido necessário para comprar o produto.\n• Target Sell: O preço de revenda recomendado (taxa de mercado incluída) para garantir que sua oferta seja a mais barata. Copiado automaticamente para a área de transferência.\n• Net Profit: Seus ganhos líquidos após deduzir a taxa de mercado.\n• Buy (Comprar): Abre a página do RollerCoin e copia o preço de Target Sell para a área de transferência.",
+    guideStep3Title: "Passo 3 - Lógica de Arbitragem",
+    guideStep3Desc: "Quando uma oportunidade de arbitragem é capturada, a lista de preços no RollerCoin se parece com a imagem.\n\nO algoritmo compara as duas ofertas mais baratas. Se comprar o item mais barato e revendê-lo (com taxas incluídas) permitir listá-lo abaixo da segunda opção mais barata e ainda obter lucro, ele é sinalizado como uma oportunidade.",
+    guideStep4Title: "Passo 4 - Venda e Cálculo de Lucro",
+    guideStep4Desc: "Para revender o item que compramos por 0.252 RLT (Actual Buy), colamos o preço de Target Sell copiado (0.295238 - caixa azul) no campo de entrada de preço.\n\nCom uma taxa de mercado de 5%, este preço resulta em um pagamento esperado de 0.31 RLT (Expected pay - caixa vermelha). Isso coloca sua oferta no topo como a mais barata, logo abaixo do concorrente mais próximo (0.32 RLT).\n\nSeu lucro líquido é calculado subtraindo o Actual Buy (0.252 RLT) do Expected Pay (0.31 RLT) que será pago a você.",
+    beforeLabel: "Antes da Transação",
+    afterLabel: "Após a Transação",
+    formulaTitle: "Fórmula de Cálculo de Lucro:",
+    marketFeeLabel: "Taxa de Mercado",
+    actualBuyLabel: "Compra Real"
   },
   ID: {
     subtitle: "Secara otomatis memindai, menghitung, dan mencantumkan peluang arbitrase instan paling menguntungkan di pasar RollerCoin.",
@@ -361,7 +435,23 @@ const translations = {
     now: "Sekarang",
     secAgo: "d lalu",
     minAgo: "m lalu",
-    guideAlert: "Panduan Arbitrase RollerCoin akan segera ditambahkan!"
+    guideAlert: "Panduan Arbitrase RollerCoin akan segera ditambahkan!",
+    guideTitle: "Panduan Arbitrase RollerCoin",
+    guideStep0Title: "Selamat Datang di Rollercoinmarkt!",
+    guideStep0Desc: "Panduan ini dirancang untuk membantu Anda mengubah ketidakseimbangan harga instan di pasar RollerCoin menjadi keuntungan.\n\nSistem kami terus menganalisis dua penawaran termurah di pasar untuk menangkap peluang beli-jual (arbitrase) yang cepat dan menguntungkan. Tujuan utamanya adalah membeli item diskon secara instan dan menjualnya kembali menggunakan harga target kami yang dihitung otomatis untuk menghasilkan keuntungan cepat sebagai penawaran termurah.",
+    guideStep1Title: "Langkah 1 - Filter & Daftar Peluang",
+    guideStep1Desc: "Masukkan saldo RLT Anda saat ini untuk melihat daftar lengkap produk yang dapat Anda beli, dan gunakan opsi penyaringan lainnya.",
+    guideStep2Title: "Langkah 2 - Membaca Peluang yang Terdaftar",
+    guideStep2Desc: "Peluang pasar terbaik terdaftar secara instan di sini berdasarkan filter Anda:\n\n• QTY: Jumlah yang tersedia dengan harga termurah.\n• Actual Buy: RLT bersih yang diperlukan untuk membeli produk.\n• Target Sell: Harga jual kembali yang disarankan (termasuk biaya pasar) untuk memastikan daftar Anda adalah yang termurah. Otomatis disalin ke papan klip Anda.\n• Net Profit: Penghasilan bersih Anda setelah dikurangi biaya pasar.\n• Buy (Beli): Membuka halaman RollerCoin dan menyalin harga Target Sell ke papan klip Anda.",
+    guideStep3Title: "Langkah 3 - Logika Arbitrase",
+    guideStep3Desc: "Ketika peluang arbitrase ditangkap, daftar harga di RollerCoin terlihat seperti gambar.\n\nAlgoritme membandingkan dua penawaran termurah. Jika membeli item termurah dan menjualnya kembali (termasuk biaya) memungkinkan pendaftaran di bawah opsi termurah kedua sambil tetap menghasilkan keuntungan, itu ditandai sebagai peluang.",
+    guideStep4Title: "Langkah 4 - Penjualan & Perhitungan Keuntungan",
+    guideStep4Desc: "Untuk menjual kembali item yang kita beli seharga 0.252 RLT (Actual Buy), kita menempelkan harga Target Sell yang disalin (0.295238 - kotak biru) ke kolom input harga.\n\nDengan biaya pasar 5%, harga ini menghasilkan pembayaran yang diharapkan sebesar 0.31 RLT (Expected pay - kotak merah). Ini menempatkan daftar Anda di atas sebagai penawaran termurah, tepat di bawah pesaing terdekat (0.32 RLT).\n\nKeuntungan bersih Anda dihitung dengan mengurangi Actual Buy (0.252 RLT) dari Expected Pay (0.31 RLT) yang akan dibayarkan kepada Anda.",
+    beforeLabel: "Sebelum Transaksi",
+    afterLabel: "Setelah Transaksi",
+    formulaTitle: "Formula Perhitungan Keuntungan:",
+    marketFeeLabel: "Biaya Pasar",
+    actualBuyLabel: "Beli Nyata"
   },
   FR: {
     subtitle: "Scanne, calcule et répertorie automatiquement les opportunités d'arbitrage instantané les plus rentables sur le marché RollerCoin.",
@@ -416,7 +506,23 @@ const translations = {
     now: "Maintenant",
     secAgo: "s avant",
     minAgo: "m avant",
-    guideAlert: "Le guide d'arbitrage RollerCoin sera bientôt ajouté !"
+    guideAlert: "Le guide d'arbitrage RollerCoin sera bientôt ajouté !",
+    guideTitle: "Guide d'Arbitrage RollerCoin",
+    guideStep0Title: "Bienvenue sur Rollercoinmarkt !",
+    guideStep0Desc: "Ce guide est conçu pour vous aider à transformer les déséquilibres de prix instantanés sur le marché RollerCoin en profit.\n\nNotre système analyse en permanence les deux offres les moins chères du marché pour capturer des opportunités d'achat-vente (arbitrage) rapides et rentables. Le but principal est d'acheter un article à prix réduit instantanément et de le revendre en utilisant notre prix cible calculé automatiquement pour réaliser un profit rapide en tant qu'offre la moins chère.",
+    guideStep1Title: "Étape 1 - Filtrer et Lister les Opportunités",
+    guideStep1Desc: "Entrez votre solde RLT actuel pour voir la liste complète des produits que vous pouvez acheter, et utilisez d'autres options de filtrage.",
+    guideStep2Title: "Étape 2 - Lecture des Opportunités Listées",
+    guideStep2Desc: "Les meilleures opportunités du marché sont listées instantanément ici en fonction de vos filtres :\n\n• QTY: La quantité disponible au prix le moins cher.\n• Actual Buy: Le RLT net requis pour acheter le produit.\n• Target Sell: Le prix de revente recommandé (frais de marché inclus) pour garantir que votre offre soit la moins chère. Copié automatiquement dans votre presse-papiers.\n• Net Profit: Vos gains nets après déduction des frais de marché.\n• Buy (Acheter): Ouvre la page RollerCoin et copie le prix de Target Sell dans votre presse-papiers.",
+    guideStep3Title: "Étape 3 - Logique d'Arbitrage",
+    guideStep3Desc: "Lorsqu'une opportunité d'arbitrage est capturée, la liste des prix sur RollerCoin ressemble à l'image.\n\nL'algorithme compare les deux offres les moins chères. Si l'achat de l'article le moins cher et sa revente (frais inclus) permettent de le lister en dessous de la deuxième option la moins chère tout en générant un profit, il est signalé comme une opportunité.",
+    guideStep4Title: "Étape 4 - Vente et Calcul du Profit",
+    guideStep4Desc: "Pour revendre l'article que nous avons acheté pour 0.252 RLT (Actual Buy), nous collons le prix Target Sell copié (0.295238 - encadré bleu) dans le champ de saisie du prix.\n\nAvec des frais de marché de 5%, ce prix donne un paiement attendu de 0.31 RLT (Expected pay - encadré rouge). Cela place votre offre en tête en tant que moins chère, juste en dessous du concurrent le plus proche (0.32 RLT).\n\nVotre profit net est calculé en soustrayant l'Actual Buy (0.252 RLT) de l'Expected Pay (0.31 RLT) qui vous sera payé.",
+    beforeLabel: "Avant la Transaction",
+    afterLabel: "Après la Transaction",
+    formulaTitle: "Formule de Calcul du Profit :",
+    marketFeeLabel: "Frais de Marché",
+    actualBuyLabel: "Achat Réel"
   },
   DE: {
     subtitle: "Scannt, berechnet und listet automatisch die profitabelsten sofortigen Arbitrage-Möglichkeiten auf dem RollerCoin-Markt auf.",
@@ -471,7 +577,23 @@ const translations = {
     now: "Jetzt",
     secAgo: "s zuvor",
     minAgo: "m zuvor",
-    guideAlert: "Die RollerCoin Arbitrage-Anleitung wird bald hinzugefügt!"
+    guideAlert: "Die RollerCoin Arbitrage-Anleitung wird bald hinzugefügt!",
+    guideTitle: "RollerCoin Arbitrage-Anleitung",
+    guideStep0Title: "Willkommen bei Rollercoinmarkt!",
+    guideStep0Desc: "Diese Anleitung soll Ihnen helfen, sofortige Preisungleichgewichte auf dem RollerCoin-Markt in Gewinn umzuwandeln.\n\nUnser System analysiert kontinuierlich die beiden günstigsten Angebote auf dem Markt, um schnelle und profitable Kauf-Verkauf-Möglichkeiten (Arbitrage) zu erfassen. Das Hauptziel besteht darin, einen rabattierten Artikel sofort zu kaufen und ihn zu unserem automatisch berechneten Zielpreis weiterzuverkaufen, um als günstigstes Angebot einen schnellen Gewinn zu erzielen.",
+    guideStep1Title: "Schritt 1 - Möglichkeiten filtern und auflisten",
+    guideStep1Desc: "Geben Sie Ihr aktuelles RLT-Guthaben ein, um die vollständige Liste der Produkte anzuzeigen, die Sie kaufen können, und verwenden Sie andere Filteroptionen.",
+    guideStep2Title: "Schritt 2 - Lesen der aufgelisteten Möglichkeiten",
+    guideStep2Desc: "Die besten Marktchancen werden hier basierend auf Ihren Filtern sofort aufgelistet:\n\n• QTY: Die zum günstigsten Preis verfügbare Menge.\n• Actual Buy: Das für den Kauf des Produkts erforderliche Netto-RLT.\n• Target Sell: Der empfohlene Wiederverkaufspreis (inkl. Marktgebühr), um sicherzustellen, dass Ihr Angebot das günstigste ist. Automatisch in Ihre Zwischenablage kopiert.\n• Net Profit: Ihr Nettoverdienst nach Abzug der Marktgebühr.\n• Buy (Kaufen): Öffnet die RollerCoin-Seite und kopiert den Target-Sell-Preis in Ihre Zwischenablage.",
+    guideStep3Title: "Schritt 3 - Arbitrage-Logik",
+    guideStep3Desc: "Wenn eine Arbitrage-Möglichkeit erfasst wird, sieht die Preisliste auf RollerCoin wie auf dem Bild aus.\n\nDer Algorithmus vergleicht die beiden günstigsten Angebote. Wenn der Kauf des günstigsten Artikels und sein Wiederverkauf (inklusive Gebühren) eine Listung unter der zweitgünstigsten Option ermöglichen und dennoch Gewinn abwerfen, wird dies als Gelegenheit gekennzeichnet.",
+    guideStep4Title: "Schritt 4 - Verkauf und Gewinnberechnung",
+    guideStep4Desc: "Um den Artikel, den wir für 0,252 RLT (Actual Buy) gekauft haben, wiederzuverkaufen, fügen wir den kopierten Target-Sell-Preis (0,295238 - blaues Feld) in das Preiseingabefeld ein.\n\nMit einer Marktgebühr von 5 % führt dieser Preis zu einer erwarteten Auszahlung von 0,31 RLT (Expected pay - rotes Feld). Dadurch wird Ihr Angebot ganz oben als günstigstes Angebot platziert, knapp unter dem des nächsten Konkurrenten (0,32 RLT).\n\nIhr Nettogewinn errechnet sich durch Abzug des Actual Buy (0,252 RLT) von der Expected Pay (0,31 RLT), die an Sie ausgezahlt wird.",
+    beforeLabel: "Vor der Transaktion",
+    afterLabel: "Nach der Transaktion",
+    formulaTitle: "Gewinnberechnungsformel:",
+    marketFeeLabel: "Marktgebühr",
+    actualBuyLabel: "Tatsächlicher Kauf"
   }
 }
 
@@ -493,6 +615,8 @@ const currentTier = ref(1)
 const tierTimer = ref(0)
 let tierInterval = null
 const showTierModal = ref(false)
+const showGuideModal = ref(false)
+const guidePage = ref(1)
 
 const startTierTimer = () => {
   if (tierInterval) clearInterval(tierInterval)
@@ -524,6 +648,7 @@ const handleWatchAd = () => {
   } else if (currentTier.value === 3) {
     tierTimer.value = 15 * 60
   }
+  showTierModal.value = false
 }
 
 const formatTimer = (seconds) => {
@@ -564,7 +689,8 @@ const toggleVolumeSlider = () => {
 }
 
 const openGuide = () => {
-  alert(t('guideAlert'))
+  guidePage.value = 0
+  showGuideModal.value = true
 }
 
 const mouseX = ref(window.innerWidth / 2)
@@ -1440,6 +1566,268 @@ onUnmounted(() => {
         </div>
       </div>
     </transition>
+    
+    <!-- Guide Modal -->
+    <transition name="fade-modal">
+      <div 
+        v-if="showGuideModal"
+        class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-6"
+      >
+        <div class="flex flex-col items-center justify-center max-w-4xl w-full gap-6 relative">
+          <!-- Modal Body -->
+          <div 
+            class="modal-card bg-[#030207]/90 border border-white/10 p-8 rounded-3xl w-full flex flex-col gap-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden transform scale-100 transition-all duration-300"
+          >
+            <!-- Close Button -->
+            <button 
+              @click="showGuideModal = false"
+              class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center border border-white/10 hover:border-white/20 transition-all cursor-pointer z-20"
+              :title="t('langTitle') === 'Dili Değiştir' ? 'Kapat' : 'Close'"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" stroke="currentColor" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <!-- Title -->
+            <div class="text-center relative z-10 border-b border-white/5 pb-4">
+              <h2 class="text-xl md:text-2xl font-black font-outfit uppercase tracking-widest text-gray-300">
+                {{ t('guideTitle') }}
+              </h2>
+            </div>
+
+            <!-- Page Container (Grid with arrow buttons on sides) -->
+            <div class="relative z-10 grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">
+              <!-- Left Arrow -->
+              <button 
+                @click="guidePage = Math.max(0, guidePage - 1)"
+                :disabled="guidePage === 0"
+                class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed enabled:hover:bg-white/15 enabled:hover:border-white/25 cursor-pointer"
+              >
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <!-- Content Area -->
+              <div class="text-left overflow-hidden flex flex-col gap-4">
+                <!-- Page 0 Content (Welcome) -->
+                <div v-if="guidePage === 0" class="flex flex-col gap-4 py-1 min-h-[300px] justify-center items-center text-center w-full">
+                  <h3 class="text-2xl font-black font-outfit text-emerald-400 text-center uppercase tracking-wider w-full">
+                    {{ t('guideStep0Title') }}
+                  </h3>
+                  <div class="border-t border-emerald-500/10 my-1 w-24 mx-auto"></div>
+                  <p class="text-xs text-gray-300 leading-relaxed whitespace-pre-line text-center max-w-xl mx-auto w-full">
+                    {{ t('guideStep0Desc') }}
+                  </p>
+                  
+                  <!-- Before & After Comparison Grid -->
+                  <div class="flex items-center justify-center gap-4 mt-2 max-w-lg mx-auto w-full">
+                    <!-- Before Card -->
+                    <div class="flex flex-col items-center gap-1.5 flex-1">
+                      <span class="text-[10px] font-black text-red-400 uppercase tracking-widest">{{ t('beforeLabel') }}</span>
+                      <div class="rounded-xl border border-white/10 overflow-hidden bg-black/40 p-1 shadow-md w-full">
+                        <img :src="guideBeforeImg" alt="Before" class="w-full h-auto object-contain rounded-lg" />
+                      </div>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div class="flex items-center justify-center shrink-0">
+                      <svg class="w-6 h-6 text-emerald-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </div>
+
+                    <!-- After Card -->
+                    <div class="flex flex-col items-center gap-1.5 flex-1">
+                      <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{{ t('afterLabel') }}</span>
+                      <div class="rounded-xl border border-white/10 overflow-hidden bg-black/40 p-1 shadow-md w-full">
+                        <img :src="guideAfterImg" alt="After" class="w-full h-auto object-contain rounded-lg" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Profit Calculation Formula (Mathematical Fractional Representation) -->
+                  <div class="mt-3 text-center flex justify-center">
+                    <div class="inline-flex flex-col items-center bg-emerald-500/5 border border-emerald-500/10 px-5 py-3 rounded-2xl select-none">
+                      <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2">{{ t('formulaTitle') }}</span>
+                      <div class="flex items-center gap-3 font-mono text-sm text-white font-black">
+                        <!-- Fractional division block -->
+                        <div class="flex flex-col items-center">
+                          <span class="pb-0.5 text-white">0.31</span>
+                          <div class="w-full h-[1.5px] bg-white/60"></div>
+                          <span class="pt-0.5 text-gray-400 text-xs">1.05 <span class="text-[9px] block -mt-0.5 font-sans uppercase font-bold text-gray-500">({{ t('marketFeeLabel') }})</span></span>
+                        </div>
+                        
+                        <span class="text-base text-gray-400 font-sans">-</span>
+                        
+                        <div class="flex flex-col items-center">
+                          <span>0.252</span>
+                          <span class="text-[9px] font-sans uppercase font-bold text-gray-500">({{ t('actualBuyLabel') }})</span>
+                        </div>
+
+                        <span class="text-base text-emerald-400 font-sans">=</span>
+
+                        <div class="flex flex-col items-center text-emerald-400">
+                          <span>0.043 RLT</span>
+                          <span class="text-[9px] font-sans uppercase font-black text-emerald-500/80">PROFIT</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Page 1 Content -->
+                <div v-if="guidePage === 1" class="flex flex-col gap-3">
+                  <h3 class="text-lg font-bold font-outfit text-emerald-400">
+                    {{ t('guideStep1Title') }}
+                  </h3>
+                  <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                    {{ t('guideStep1Desc') }}
+                  </p>
+                  <div class="mt-2 rounded-2xl border border-white/10 overflow-hidden bg-black/40 p-2 shadow-inner max-w-full">
+                    <img :src="guideStep1Img" alt="Guide Step 1" class="w-full h-auto object-cover rounded-xl" />
+                  </div>
+                </div>
+
+                <!-- Page 2 Content -->
+                <div v-if="guidePage === 2" class="flex flex-col gap-3">
+                  <h3 class="text-lg font-bold font-outfit text-emerald-400">
+                    {{ t('guideStep2Title') }}
+                  </h3>
+                  <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                    {{ t('guideStep2Desc') }}
+                  </p>
+                  <div class="mt-2 rounded-2xl border border-white/10 overflow-hidden bg-black/40 p-2 shadow-inner max-w-full">
+                    <img :src="guideStep2Img" alt="Guide Step 2" class="w-full h-auto object-cover rounded-xl" />
+                  </div>
+                </div>
+
+                <!-- Page 3 Content -->
+                <div v-if="guidePage === 3" class="flex flex-col gap-3">
+                  <h3 class="text-lg font-bold font-outfit text-emerald-400">
+                    {{ t('guideStep3Title') }}
+                  </h3>
+                  <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                    {{ t('guideStep3Desc') }}
+                  </p>
+                  <div class="mt-2 rounded-2xl border border-white/10 overflow-hidden bg-black/40 p-2 shadow-inner max-w-full">
+                    <img :src="guideStep3Img" alt="Guide Step 3" class="w-full h-auto object-cover rounded-xl" />
+                  </div>
+                </div>
+
+                <!-- Page 4 Content -->
+                <div v-if="guidePage === 4" class="flex flex-col gap-3">
+                  <h3 class="text-lg font-bold font-outfit text-emerald-400">
+                    {{ t('guideStep4Title') }}
+                  </h3>
+                  <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                    {{ t('guideStep4Desc') }}
+                  </p>
+                  <div class="mt-2 rounded-2xl border border-white/10 overflow-hidden bg-black/40 p-2 shadow-inner max-w-full">
+                    <img :src="guideStep4Img" alt="Guide Step 4" class="w-full h-auto object-cover rounded-xl" />
+                  </div>
+                </div>
+
+                <!-- Page 5 Content (Tips & Recommendations) -->
+                <div v-if="guidePage === 5" class="flex flex-col gap-3 py-2 min-h-[300px] justify-center w-full">
+                  <h3 class="text-xl font-bold font-outfit text-emerald-400 text-center uppercase tracking-wider">
+                    {{ t('guideStep5Title') }}
+                  </h3>
+                  <div class="border-t border-emerald-500/10 my-2 w-24 mx-auto"></div>
+                  
+                  <div class="flex flex-col gap-4 text-xs text-gray-300 max-w-2xl mx-auto w-full px-4 mt-2">
+                    <!-- Tip 1 -->
+                    <div class="guide-bullet-item">
+                      <span class="guide-bullet"></span>
+                      <p class="leading-relaxed">
+                        <strong class="text-white block mb-0.5">{{ currentLanguage === 'TR' ? 'Burning Event Ürünleri' : 'Burning Event Items' }}:</strong>
+                        {{ currentLanguage === 'TR' 
+                          ? 'Bazı ürünlerin piyasa fiyatlarında geçici dengesizlikler oluşabilir. Özellikle Burning (yakma) etkinliklerinde kullanılan bu tarz ürünler yüksek kar potansiyeli taşımayabilir, alım-satım kararı tamamen sizin inisiyatifinizdedir.' 
+                          : 'Some items may list at abnormal prices due to market distortions. These items used in burning events might not yield high profits; trading them is entirely at your discretion.' }}
+                      </p>
+                    </div>
+
+                    <!-- Tip 2 -->
+                    <div class="guide-bullet-item">
+                      <span class="guide-bullet"></span>
+                      <p class="leading-relaxed">
+                        <strong class="text-white block mb-0.5">{{ currentLanguage === 'TR' ? 'Target Sell Esnekliği' : 'Target Sell Flexibility' }}:</strong>
+                        {{ currentLanguage === 'TR' 
+                          ? 'Algoritma size her zaman en ucuz ilanın bir kademe altındaki hedef satış fiyatını kopyalar. Satış yaparken bu fiyatın altına inmek veya üstüne çıkmak sizin tercihinizdir.' 
+                          : 'The algorithm always copies the target price just one step below the cheapest current listing. Reselling below or above this target price is up to you.' }}
+                      </p>
+                    </div>
+
+                    <!-- Tip 3 -->
+                    <div class="guide-bullet-item">
+                      <span class="guide-bullet"></span>
+                      <p class="leading-relaxed">
+                        <strong class="text-white block mb-0.5">{{ currentLanguage === 'TR' ? 'Fiyat Stratejisi' : 'Resale Strategy' }}:</strong>
+                        {{ currentLanguage === 'TR' 
+                          ? 'Target Sell fiyatının üzerinde satış yapmak bazen daha yüksek kazanç getirse de satış sürecini uzatabilir. Target Sell fiyatının biraz daha altına listelemek ise ürünün çok daha hızlı satılmasını ve algoritma tarafından tekrar fırsat olarak yakalanmasını kolaylaştırır.' 
+                          : 'Reselling above the Target Sell price may increase gains but often slows down the sale. Reselling slightly below the Target Sell price is favored by the algorithm, allowing for a quicker sale and making the item eligible to be caught as an opportunity again.' }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Arrow -->
+              <button 
+                @click="guidePage = Math.min(5, guidePage + 1)"
+                :disabled="guidePage === 5"
+                class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed enabled:hover:bg-white/15 enabled:hover:border-white/25 cursor-pointer"
+              >
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Dots Indicator / Page Numbers -->
+            <div class="flex justify-center items-center gap-2.5 mt-2 z-10">
+              <button 
+                @click="guidePage = 0"
+                class="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+                :class="guidePage === 0 ? 'bg-emerald-400 scale-125 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-white/20 hover:bg-white/40'"
+                title="Introduction"
+              ></button>
+              <button 
+                @click="guidePage = 1"
+                class="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+                :class="guidePage === 1 ? 'bg-emerald-400 scale-125 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-white/20 hover:bg-white/40'"
+                title="Page 1"
+              ></button>
+              <button 
+                @click="guidePage = 2"
+                class="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+                :class="guidePage === 2 ? 'bg-emerald-400 scale-125 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-white/20 hover:bg-white/40'"
+                title="Page 2"
+              ></button>
+              <button 
+                @click="guidePage = 3"
+                class="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+                :class="guidePage === 3 ? 'bg-emerald-400 scale-125 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-white/20 hover:bg-white/40'"
+                title="Page 3"
+              ></button>
+              <button 
+                @click="guidePage = 4"
+                class="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+                :class="guidePage === 4 ? 'bg-emerald-400 scale-125 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-white/20 hover:bg-white/40'"
+                title="Page 4"
+              ></button>
+              <button 
+                @click="guidePage = 5"
+                class="w-2.5 h-2.5 rounded-full transition-all cursor-pointer"
+                :class="guidePage === 5 ? 'bg-emerald-400 scale-125 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-white/20 hover:bg-white/40'"
+                title="Tips"
+              ></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
 
   </div>
 </template>
@@ -1579,5 +1967,27 @@ onUnmounted(() => {
 }
 .fade-modal-leave-to .modal-card {
   transform: scale(0.96) translateY(8px);
+}
+
+/* Guide List Styling */
+.guide-bullet-list {
+  display: flex;
+  flex-col: column;
+  gap: 1.25rem;
+}
+.guide-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  line-height: 1.6;
+}
+.guide-bullet {
+  width: 6px;
+  height: 6px;
+  background-color: #ffffff;
+  border-radius: 9999px;
+  margin-top: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 </style>
