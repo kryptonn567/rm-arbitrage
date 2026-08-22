@@ -12,4 +12,12 @@ body {
   background-color: #030207;
   color: #ffffff;
   overflow-x: hidden;
+  width: 100vw;
+}
+
+@media (max-width: 340px) {
+  /* Ultra küçük ekranlarda reklamların ve içeriğin patlamaması için global ölçeklendirme veya minimum genişlik desteği */
+  body {
+    min-width: 320px;
+  }
 }
