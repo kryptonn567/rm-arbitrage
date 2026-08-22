@@ -1078,11 +1078,20 @@ onUnmounted(() => {
       </div>
 
       <main class="flex-1 flex flex-col items-center justify-start p-4 md:p-8 w-full max-w-7xl mx-auto mt-6">
+        <!-- Mobile Ad 1 (Top unit in responsive layout) -->
+        <div class="flex 2xl:hidden items-center justify-center w-full mb-6 select-none relative z-30">
+          <div class="w-[320px] h-[100px] overflow-hidden rounded-xl border border-white/5 bg-white/[0.01]">
+            <iframe data-aa='2452715'
+                src='//ad.a-ads.com/2452715/?size=320x100'
+                style='border:0; padding:0; width:320px; height:100px; overflow:hidden; display:block;'>
+            </iframe>
+          </div>
+        </div>
         <div class="w-full flex flex-col gap-6">
         <header class="flex flex-col md:flex-row items-center justify-between gap-4 w-full border-b border-white/5 pb-6">
-          <div class="flex items-center gap-4">
+          <div class="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
             <img :src="faviconImg" class="logo-img w-12 h-12 md:w-16 md:h-16" alt="Logo" />
-            <div class="text-left">
+            <div class="text-center md:text-left">
               <h1 class="text-2xl md:text-3xl font-black tracking-wider font-outfit uppercase bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
                 Rollercoinmarkt
               </h1>
@@ -1092,7 +1101,7 @@ onUnmounted(() => {
             </div>
           </div>
           
-          <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+          <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-center md:justify-end">
             <button 
               @click="openGuide"
               class="cursor-pointer flex items-center gap-2 px-4 py-2 h-10 rounded-lg bg-white/15 hover:bg-white/20 border border-white/20 hover:border-white/30 text-sm font-bold text-white transition-all font-outfit uppercase tracking-[0.12em] group"
@@ -1361,6 +1370,16 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+      
+      <!-- Mobile Ad 2 (Bottom unit in responsive layout - placed outside the blurred Show More area, at the absolute bottom of main) -->
+      <div class="flex 2xl:hidden items-center justify-center w-full mt-6 select-none relative z-30">
+        <div class="w-[320px] h-[100px] overflow-hidden rounded-xl border border-white/5 bg-white/[0.01]">
+          <iframe data-aa='2452716'
+              src='//ad.a-ads.com/2452716/?size=320x100'
+              style='border:0; padding:0; width:320px; height:100px; overflow:hidden; display:block;'>
+          </iframe>
+        </div>
+      </div>
     </main>
 
       <!-- Right Ad Sidebar -->
@@ -1610,46 +1629,44 @@ onUnmounted(() => {
     <transition name="fade-modal">
       <div 
         v-if="showGuideModal"
-        class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-6"
+        class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6"
       >
-        <div class="flex flex-col items-center justify-center max-w-4xl w-full gap-6 relative">
+        <div class="flex flex-col items-center justify-center max-w-4xl w-full gap-4 relative">
           <!-- Modal Body -->
           <div 
-            class="modal-card bg-[#030207]/90 border border-white/10 p-8 rounded-3xl w-full flex flex-col gap-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden transform scale-100 transition-all duration-300"
+            class="modal-card bg-[#030207]/95 border border-white/10 p-4 md:p-8 rounded-2xl md:rounded-3xl w-full flex flex-col gap-4 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden transform scale-100 transition-all duration-300 max-h-[92vh]"
           >
-            <!-- Close Button -->
-            <button 
-              @click="showGuideModal = false"
-              class="absolute top-4 right-4 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center border border-white/10 hover:border-white/20 transition-all cursor-pointer z-20"
-              :title="t('langTitle') === 'Dili Değiştir' ? 'Kapat' : 'Close'"
-            >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" stroke="currentColor" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <!-- Title -->
-            <div class="text-center relative z-10 border-b border-white/5 pb-4">
-              <h2 class="text-xl md:text-2xl font-black font-outfit uppercase tracking-widest text-gray-300">
+            <!-- Close Button / Header Row -->
+            <div class="flex items-center justify-between border-b border-white/5 pb-3 relative z-10 w-full">
+              <h2 class="text-sm md:text-2xl font-black font-outfit uppercase tracking-widest text-gray-300 pr-10">
                 {{ t('guideTitle') }}
               </h2>
+              <button 
+                @click="showGuideModal = false"
+                class="absolute -top-1 right-0 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 w-8 h-8 rounded-full flex items-center justify-center border border-white/10 hover:border-white/20 transition-all cursor-pointer z-20"
+                :title="t('langTitle') === 'Dili Değiştir' ? 'Kapat' : 'Close'"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" stroke="currentColor" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
             <!-- Page Container (Grid with arrow buttons on sides) -->
-            <div class="relative z-10 grid grid-cols-[auto_1fr_auto] items-center gap-4 w-full">
+            <div class="relative z-10 grid grid-cols-[auto_1fr_auto] items-center gap-2 md:gap-4 w-full">
               <!-- Left Arrow -->
               <button 
                 @click="guidePage = Math.max(0, guidePage - 1)"
                 :disabled="guidePage === 0"
-                class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed enabled:hover:bg-white/15 enabled:hover:border-white/25 cursor-pointer"
+                class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed enabled:hover:bg-white/15 enabled:hover:border-white/25 cursor-pointer"
               >
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
 
-              <!-- Content Area -->
-              <div class="text-left overflow-hidden flex flex-col gap-4">
+              <!-- Content Area (Scrollable on mobile) -->
+              <div class="text-left overflow-y-auto max-h-[62vh] md:max-h-none scrollbar-thin flex flex-col gap-4 pr-1 w-full">
                 <!-- Page 0 Content (Welcome) -->
                 <div v-if="guidePage === 0" class="flex flex-col gap-4 py-1 min-h-[300px] justify-center items-center text-center w-full">
                   <h3 class="text-2xl font-black font-outfit text-emerald-400 text-center uppercase tracking-wider w-full">
