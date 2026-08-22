@@ -1080,12 +1080,12 @@ onUnmounted(() => {
       <main class="flex-1 flex flex-col items-center justify-start p-4 md:p-8 w-full max-w-7xl mx-auto mt-6">
         <!-- Mobile Ad 1 (Top unit in responsive layout) -->
         <div class="flex 2xl:hidden items-center justify-center w-full mb-6 select-none relative z-30">
-          <div class="w-[320px] h-[100px] overflow-hidden rounded-xl border border-white/5 bg-white/[0.01]">
-            <iframe data-aa='2452715'
-                src='//ad.a-ads.com/2452715/?size=320x100'
-                style='border:0; padding:0; width:320px; height:100px; overflow:hidden; display:block;'>
-            </iframe>
+          <!-- BEGIN AADS AD UNIT 2453037 -->
+          <div id="frame-top-mob" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+            <iframe data-aa='2453037' src='//acceptable.a-ads.com/2453037/?size=Adaptive'
+              style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
           </div>
+          <!-- END AADS AD UNIT 2453037 -->
         </div>
         <div class="w-full flex flex-col gap-6">
         <header class="flex flex-col md:flex-row items-center justify-between gap-4 w-full border-b border-white/5 pb-6">
@@ -1373,12 +1373,12 @@ onUnmounted(() => {
       
       <!-- Mobile Ad 2 (Bottom unit in responsive layout - placed outside the blurred Show More area, at the absolute bottom of main) -->
       <div class="flex 2xl:hidden items-center justify-center w-full mt-6 select-none relative z-30">
-        <div class="w-[320px] h-[100px] overflow-hidden rounded-xl border border-white/5 bg-white/[0.01]">
-          <iframe data-aa='2452716'
-              src='//ad.a-ads.com/2452716/?size=320x100'
-              style='border:0; padding:0; width:320px; height:100px; overflow:hidden; display:block;'>
-          </iframe>
+        <!-- BEGIN AADS AD UNIT 2453038 -->
+        <div id="frame-bottom-mob" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+          <iframe data-aa='2453038' src='//acceptable.a-ads.com/2453038/?size=Adaptive'
+            style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
         </div>
+        <!-- END AADS AD UNIT 2453038 -->
       </div>
     </main>
 
